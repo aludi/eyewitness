@@ -10,12 +10,14 @@ class Ranger(mesa.Agent):
 
         """
         super().__init__(unique_id, model)
+        prof = [(0, 0, 0), (0, 0, 1), (0, 0, 2), (0, 1, 0), (1,1,1), (1,1,2), (2,2,0), (2,2,1), (1,2,0), (2,2,2)]
         self.goal = (0,0)
-        self.profile = (random.randint(0,2),random.randint(0,2),random.randint(0,2))
+        self.profile = prof[people_id]
         self.people_id = people_id
         self.condition = "human"
         self.good_visible_cells=[]
         self.bad_visible_cells=[]
+        self.was_observed_stealing_by = []
         self.valuable = 0.8
         self.stolen_goods = []
         self.target = None
@@ -195,6 +197,7 @@ class Ranger(mesa.Agent):
 
     def step(self):
         #print(self.people_id, self.valuable, self.stolen_goods)
+        self.was_observed_stealing_by = []
         self.determine_goal()
         self.move()
         self.get_vision()

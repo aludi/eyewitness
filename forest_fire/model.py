@@ -21,10 +21,10 @@ class ObservationStruc():
 
         self.original_obj_agent_profile = obj_agent.profile
         self.observed_obj_agent_profile, self.vis_perturb = self.vision_perturbation(obs_sense)
-        self.memorized_obj_agent_profile = None
+        self.memorized_obj_agent_profile = False
         self.testified_obj_agent_profile = self.observed_obj_agent_profile
-        self.memory_perturb = None
-        self.veracity_perturb = None
+        self.memory_perturb = False
+        self.veracity_perturb = False
 
         self.observation_time = self.subj_agent.model.schedule.time
 
@@ -37,13 +37,14 @@ class ObservationStruc():
             self.indirect_agent_pos = indirect_agent.pos
 
     def __repr__(self):
-        if self.predicate_obj == None:
+        if self.predicate_obj is None:
             return (f'\n{self.subj_agent.people_id} {self.predicate_sub} {self.obj_agent.people_id}, '
-                    f' at {self.obj_agent_pos}')
+                    f' at pos {self.obj_agent_pos} at time {self.observation_time}')
         else:
+
             return (f'\n{self.subj_agent.people_id} {self.predicate_sub} '
-                    f'<{self.testified_obj_agent_profile}> (real profile = <{self.original_obj_agent_profile}>), '
-                    f'  {self.predicate_obj} {self.indirect_agent.people_id}')
+                f'<{self.testified_obj_agent_profile}> (real profile = <{self.original_obj_agent_profile}>), '
+                f'  {self.predicate_obj} {self.indirect_agent.people_id} at {self.obj_agent_pos} at time {self.observation_time}')
 
 
     def vision_perturbation(self, obs_sense):
@@ -66,9 +67,11 @@ class ObservationStruc():
 
         return (a,b,c), vis_perturb
 
+
+
     def memory_perturbation(self, d_t):
         (a, b, c) = self.observed_obj_agent_profile
-        if self.memory_perturb is None:
+        if self.memory_perturb is False:
             self.memory_perturb = False
             if d_t > 10:    # after some time the memory fades and risks bad reporting
                 if random.random() < 0.4:
@@ -98,11 +101,12 @@ class ObservationStruc():
                         self.memory_perturb = True
 
         self.memorized_obj_agent_profile = (a, b, c)
+        return (a,b,c), self.memory_perturb
 
 
     def veracity_perturbation(self):
         (a, b, c) = self.memorized_obj_agent_profile
-        if self.veracity_perturb == None: # if in the first testimony the agent has decided to lie they will keep doing that
+        if self.veracity_perturb == False: # if in the first testimony the agent has decided to lie they will keep doing that
             self.veracity_perturb = False
             # agents have a tendency to lie randomly
             if random.random() < 0.4:
@@ -119,21 +123,35 @@ class ObservationStruc():
                     self.veracity_perturb = True
 
         self.testified_obj_agent_profile = (a, b, c)
+        return (a,b,c), self.veracity_perturb
 
     def get_data_testimony(self):
-        self.testimony_vector = {"observer": self.subj_agent.people_id,
-                                 "real_thief": self.obj_agent.profile,
-                                 "victim": self.indirect_agent.people_id,
+        if self.indirect_agent is None:
+            indirect_agent_id = "None"
+        else:
+            indirect_agent_id = self.indirect_agent.people_id
+        if self.predicate_obj is None:
+            action_2 = "None"
+        else:
+            action_2 = self.predicate_obj
+
+        self.testimony_vector = {"subj_agent": self.subj_agent.people_id,
+                                 "subj_agent_prof": self.subj_agent.profile,
+                                 "object_agent": self.obj_agent.people_id,
+                                 "obj_agent_prof": self.obj_agent.profile,
+                                 "indirect_agent": indirect_agent_id,
+                                 "action1":self.predicate_sub,
+                                 "action2":action_2,
                                  "time_testimony": self.subj_agent.model.schedule.time,
-                                 "time_crime":self.observation_time,
+                                 "time_observation":self.observation_time,
                                  "place_observer": self.subj_agent.pos,
-                                 "place_theft": self.obj_agent_pos,
+                                 "place_observed_action": self.obj_agent_pos,
                                  "vision_perturb": self.vis_perturb,
-                                 "observed_thief": self.observed_obj_agent_profile,
+                                 "observed_agent": self.observed_obj_agent_profile,
                                  "memory_perturb": self.memory_perturb,
-                                 "memorized_thief": self.memorized_obj_agent_profile,
+                                 "memorized_agent": self.memorized_obj_agent_profile,
                                  "veracity_perturb": self.veracity_perturb,
-                                 "testified_thief": self.testified_obj_agent_profile
+                                 "testified_agent": self.testified_obj_agent_profile
                                  }
 
 
@@ -143,7 +161,7 @@ class ForestFire(mesa.Model):
     Simple Forest Fire model.
     """
 
-    def __init__(self, width=100, height=100, density=0.65):
+    def __init__(self, width=50, height=50, density=0.65):
         """
         Create a new forest fire model.
 
@@ -158,6 +176,7 @@ class ForestFire(mesa.Model):
         self.place_agents = []
         self.people_agents = []
         self.data_collection_time = []
+        self.collected_data_model_dict = {}
 
         self.relevant_data = []
 
@@ -169,7 +188,7 @@ class ForestFire(mesa.Model):
             }
         )
         unique_id = 0
-        self.ranger_num = 10
+        self.ranger_num = 3
 
         # set goal spaces
         self.goal_spaces = []
@@ -217,6 +236,7 @@ class ForestFire(mesa.Model):
             self.people_agents.append(new_ranger)
 
         #print(set(profles))
+        #self.initialize_data_model_dict()
         self.running = True
         self.datacollector.collect(self)
 
@@ -236,10 +256,11 @@ class ForestFire(mesa.Model):
         self.data_collection_time.append(list_obs)
         # collect data
         self.datacollector.collect(self)
+        #self.collect_data()
         #print(self.data_collection_time)
 
 
-        if self.schedule.time == 80: #%10 == 0:
+        if self.schedule.time == 40: #%10 == 0:
             # ask for testimony
             self.get_testimony()
 
@@ -254,18 +275,23 @@ class ForestFire(mesa.Model):
         #if self.count_type(self, "On Fire") == 0:
         #    self.running = False
 
+
+
     def get_testimony(self):
         for time_index in range(0, len(self.data_collection_time)):
             d_t = self.schedule.time - time_index
             for observation in self.data_collection_time[time_index]:
-                #print(observation)
-                if observation.predicate_obj == "stealing from":
+                if observation.predicate_obj is not None:
+                    #print(observation)
+                    #if observation.predicate_obj == "stealing from":
                     observation.memory_perturbation(d_t)
                     observation.veracity_perturbation()
                     #print(time_index,observation)
-                    observation.get_data_testimony()
-                    #print(observation.testimony_vector)
-                    self.relevant_data.append(observation.testimony_vector)
+                observation.get_data_testimony()
+                #print(observation.testimony_vector)
+
+
+                self.relevant_data.append(observation.testimony_vector)
         #for agents in self.people_agents:
 
 
@@ -277,30 +303,46 @@ class ForestFire(mesa.Model):
             agents_seen_only_bad, agents_seen_good = people.people_seen()
 
             # observations about self
-            if people.intent:
-                n_o = ObservationStruc(people, people.target, None, "targeting", None, "good")
-                list_obs.append(n_o)
-            if people.attempted_stealing:
-                n_o = ObservationStruc(people, people.target, None, "attempting to steal from", None, "good")
-                list_obs.append(n_o)
+            #if people.intent:
+            #    n_o = ObservationStruc(people, people.target, None, "targeting", None, "good")
+            #    list_obs.append(n_o)
+
+            #if people.attempted_stealing:
+            #    n_o = ObservationStruc(people, people.target, None, "attempting to steal from", None, "good")
+            #    list_obs.append(n_o)
             if people.stealing:
                 n_o = ObservationStruc(people, people.target, None, "stealing from", None, "good")
                 list_obs.append(n_o)
+            else:
+                if people.target is None:
+                    for people_not_targeting in self.people_agents:
+                        n_o = ObservationStruc(people, people_not_targeting, None, "not stealing from", None, "good")
+                        list_obs.append(n_o)
 
             for ag in agents_seen_good:
+
                 if self.people_agents[ag].target is not None:
 
                     # observations about what is happening
                     observed_ag = self.people_agents[ag]
-                    if observed_ag.intent:
+                    '''if observed_ag.intent:
                         n_o = ObservationStruc(people, observed_ag, observed_ag.target, "observed", "targeting", "good")
                         list_obs.append(n_o)
                     if observed_ag.attempted_stealing:
                         n_o = ObservationStruc(people, observed_ag, observed_ag.target, "observed", "attempting to steal from", "good")
-                        list_obs.append(n_o)
+                        list_obs.append(n_o)'''
                     if observed_ag.stealing:
+                        observed_ag.was_observed_stealing_by.append((people, observed_ag.target, "good"))
+                        #list_obs.append(n_o)
                         n_o = ObservationStruc(people, observed_ag, observed_ag.target, "observed", "stealing from", "good")
+                        observed_ag.was_observed_stealing_by.append((people, observed_ag.target, "good"))
                         list_obs.append(n_o)
+                    else:
+                        n_o = ObservationStruc(people, observed_ag, observed_ag.target, "observed",
+                                               "not stealing from",
+                                               "good")
+                        list_obs.append(n_o)
+
                 n_o = ObservationStruc(people, self.people_agents[ag], None, "observed", None, "good")
                 list_obs.append(n_o)
 
@@ -308,18 +350,46 @@ class ForestFire(mesa.Model):
             if self.people_agents[ag].target is not None:
                 # observations about what is happening
                 observed_ag = self.people_agents[ag]
-                if observed_ag.intent:
+                '''if observed_ag.intent:
                     n_o = ObservationStruc(people, observed_ag, observed_ag.target, "observed", "targeting", "bad")
                     list_obs.append(n_o)
                 if observed_ag.attempted_stealing:
                     n_o = ObservationStruc(people, observed_ag, observed_ag.target, "observed",
                                            "attempting to steal from", "bad")
-                    list_obs.append(n_o)
+                    list_obs.append(n_o)'''
+
                 if observed_ag.stealing:
+
                     n_o = ObservationStruc(people, observed_ag, observed_ag.target, "observed", "stealing from", "bad")
                     list_obs.append(n_o)
+                    observed_ag.was_observed_stealing_by.append((people, observed_ag.target, "bad"))
+                else:
+                    n_o = ObservationStruc(people, observed_ag, observed_ag.target, "observed",
+                                           "not stealing from",
+                                           "bad")
+                    list_obs.append(n_o)
+
             n_o = ObservationStruc(people, self.people_agents[ag], None, "observed", None, "bad")
             list_obs.append(n_o)
+
+        for observed_ag in self.people_agents:
+            if observed_ag not in agents_seen_good or agents_seen_only_bad:
+                #print(observed_ag, observed_ag.target)
+
+                if observed_ag.stealing == True and observed_ag.target is not None:
+                    n_o = ObservationStruc(people, observed_ag, observed_ag.target, "not capable of observing", "stealing from", "bad")
+                    list_obs.append(n_o)
+                    n_o = ObservationStruc(people, observed_ag, observed_ag.target, "not observed", "stealing from", "bad")
+                    list_obs.append(n_o)
+                else:
+                    n_o = ObservationStruc(people, observed_ag, None, "not capable of observing",
+                                           None, "bad")
+                    list_obs.append(n_o)
+                    n_o = ObservationStruc(people, observed_ag, None, "not observed", None,
+                                           "bad")
+                    list_obs.append(n_o)
+
+
         return list_obs
 
     @staticmethod
