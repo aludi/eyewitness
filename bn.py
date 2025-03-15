@@ -495,12 +495,18 @@ for key in dict_of_bn_HB.keys():
 
                 #print(f"Keys: {index_dict}, Values: {row_dict}")
     gum.saveBN(bn,f"bns/HB{dict_of_bn_HB[key]["testimony"]}.net")
+
+    try:
+        gumimage.exportInference(bn, f"bns/HB{dict_of_bn_HB[key]["testimony"]}.png")
+    except Exception as e:
+        print(e)
+
     print(bn)
 
-exit()
+
 
 for key in dict_of_bn_F.keys():
-    bn = gum.BayesNet(f"{dict_of_bn_F[key]["hypothesis"]}")
+    bn = gum.BayesNet(f"{dict_of_bn_F[key]["testimony"]}")
     for key_key in dict_of_bn_F[key].keys():
         if key_key in ["H", "FentonReliability", "reliableVision", "reliableMemory",
                        "reliableVeracity", "Testimony"]:
@@ -527,31 +533,48 @@ for key in dict_of_bn_F.keys():
         else:
             if type(dict_of_bn_F[key][key_key]) is not bool:
                 for index_values, row in dict_of_bn_F[key][key_key].iterrows():
-                    # Convert index values into a dictionary dynamically
-                    index_dict = dict(zip(dict_of_bn_F[key][key_key].index.names, index_values))
+                    print(dict_of_bn_F[key][key_key])
+                    for index_values, row in dict_of_bn_F[key][key_key].iterrows():
+                        print(len(dict_of_bn_F[key][key_key]))
+                        if len(dict_of_bn_F[key][key_key]) < 4:
+                            continue
+                        # Convert index values into a dictionary dynamically
+                        index_dict = dict(zip(dict_of_bn_F[key][key_key].index.names, index_values))
 
-                    # Convert row values to a dictionary
-                    row_dict = row.to_dict()
-                    print(index_dict, list(row_dict.values()))
-                    bn.cpt(key_key)[index_dict] = list(row_dict.values())
+                        # Convert row values to a dictionary
+                        row_dict = row.to_dict()
+                        print(index_dict, list(row_dict.values()))
+                        if len(list(row_dict.values())) == 2:
+                            bn.cpt(key_key)[index_dict] = list(row_dict.values())
+                        else:
+                            continue
 
                 #print(f"Keys: {index_dict}, Values: {row_dict}")
-    gum.saveBN(bn,f"bns/F{dict_of_bn_F[key]["hypothesis"]}.net")
+    gum.saveBN(bn,f"bns/F{dict_of_bn_F[key]["testimony"]}.net")
+    try:
+        gumimage.exportInference(bn, f"bns/F{dict_of_bn_F[key]["testimony"]}.png")
+    except Exception as e:
+        print(e)
+
+
     print(bn)
 
+
+
+exit()
 for key in dict_of_bn_timmer.keys():
-    bn = gum.BayesNet(f"{dict_of_bn_timmer[key]["hypothesis"]}")
+    bn = gum.BayesNet(f"{dict_of_bn_timmer[key]["testimony"]}")
     for key_key in dict_of_bn_timmer[key].keys():
         if key_key in ["H", "Reliability", "reliableVision", "reliableMemory",
                        "reliableVeracity", "Testimony"]:
             id_c = bn.add(gum.LabelizedVariable(key_key, key_key, 2))
     bn.addArc("H", "Testimony")
-    bn.addArc("FentonReliability", "Testimony")
-    bn.addArc("reliableVision", "FentonReliability")
-    bn.addArc("reliableMemory", "FentonReliability")
-    bn.addArc("reliableVeracity", "FentonReliability")
+    bn.addArc("Reliability", "Testimony")
+    bn.addArc("reliableVision", "Reliability")
+    bn.addArc("reliableMemory", "Reliability")
+    bn.addArc("reliableVeracity", "Reliability")
 
-    for key_key in ["H", "FentonReliability", "Testimony", "reliableVision", "reliableMemory",
+    for key_key in ["H", "Reliability", "Testimony", "reliableVision", "reliableMemory",
                        "reliableVeracity"]:
         print(key_key)
         if isinstance(dict_of_bn_timmer[key][key_key], pd.Series):
@@ -567,21 +590,27 @@ for key in dict_of_bn_timmer.keys():
         else:
             if type(dict_of_bn_timmer[key][key_key]) is not bool:
                 for index_values, row in dict_of_bn_timmer[key][key_key].iterrows():
-                    # Convert index values into a dictionary dynamically
-                    index_dict = dict(zip(dict_of_bn_timmer[key][key_key].index.names, index_values))
+                    print(dict_of_bn_timmer[key][key_key])
+                    for index_values, row in dict_of_bn_timmer[key][key_key].iterrows():
+                        print(len(dict_of_bn_timmer[key][key_key]))
+                        if len(dict_of_bn_timmer[key][key_key]) < 4:
+                            continue
+                        # Convert index values into a dictionary dynamically
+                        index_dict = dict(zip(dict_of_bn_timmer[key][key_key].index.names, index_values))
 
-                    # Convert row values to a dictionary
-                    row_dict = row.to_dict()
-                    print(index_dict, list(row_dict.values()))
-                    bn.cpt(key_key)[index_dict] = list(row_dict.values())
+                        # Convert row values to a dictionary
+                        row_dict = row.to_dict()
+                        print(index_dict, list(row_dict.values()))
+                        if len(list(row_dict.values())) == 2:
+                            bn.cpt(key_key)[index_dict] = list(row_dict.values())
+                        else:
+                            continue
 
                 #print(f"Keys: {index_dict}, Values: {row_dict}")
-    gum.saveBN(bn,f"bns/T{dict_of_bn_timmer[key]["hypothesis"]}.net")
+    gum.saveBN(bn,f"bns/T{dict_of_bn_timmer[key]["testimony"]}.net")
     print(bn)
 
-
 exit()
-
 
 
 

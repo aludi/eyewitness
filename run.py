@@ -24,8 +24,8 @@ def run_model():
 def run_visual():
     server.launch(open_browser=True)
 
-collect_data(1000)
+#collect_data(5000)
 
-#run_visual()
+run_visual()
 
 
