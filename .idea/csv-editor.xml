@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CsvFileAttributes">
+    <option name="attributeMap">
+      <map>
+        <entry key="/data/bndata/f/(0, 'TESTIFIES', ((0, 0, 0), 'STEAL', 1)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/f/(0, 'TESTIFIES', ((0, 0, 0), 'STEAL', 6)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/f/(0, 'TESTIFIES', ((0, 0, 1), 'STEAL', 3)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/f/(0, 'TESTIFIES', ((0, 1, 0), 'STEAL', 5)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/f/(0, 'TESTIFIES', ((0, 1, 0), 'STEAL', 6)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/f/(1, 'TESTIFIES', ((0, 0, 1), 'STEAL', 4)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/f/(1, 'TESTIFIES', ((0, 1, 0), 'STEAL', 0)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/f/(1, 'TESTIFIES', ((0, 1, 0), 'STEAL', 5)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/f/(1, 'TESTIFIES', ((0, 1, 0), 'STEAL', 6)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/f/(1, 'TESTIFIES', ((1, 0, 0), 'STEAL', 6)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/hb/(0, 'TESTIFIES', ((0, 0, 0), 'STEAL', 1)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/hb/(0, 'TESTIFIES', ((0, 0, 0), 'STEAL', 2)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/hb/(0, 'TESTIFIES', ((0, 0, 0), 'STEAL', 3)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/hb/(0, 'TESTIFIES', ((0, 0, 0), 'STEAL', 4)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/hb/(0, 'TESTIFIES', ((0, 0, 0), 'STEAL', 5)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/hb/(0, 'TESTIFIES', ((0, 0, 0), 'STEAL', 6)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/hb/(0, 'TESTIFIES', ((0, 0, 0), 'STEAL', 7)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/hb/(0, 'TESTIFIES', ((0, 0, 0), 'STEAL', 8)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/hb/(0, 'TESTIFIES', ((0, 0, 0), 'STEAL', 9)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/hb/(0, 'TESTIFIES', ((0, 0, 1), 'STEAL', 0)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/hb/(0, 'TESTIFIES', ((0, 0, 1), 'STEAL', 2)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/hb/(0, 'TESTIFIES', ((0, 0, 1), 'STEAL', 6)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/hb/(0, 'TESTIFIES', ((0, 0, 1), 'STEAL', 8)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/hb/(0, 'TESTIFIES', ((0, 0, 2), 'STEAL', 1)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/hb/(0, 'TESTIFIES', ((0, 0, 2), 'STEAL', 4)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/hb/(0, 'TESTIFIES', ((1, 1, 0), 'STEAL', 1)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/hb/(0, 'TESTIFIES', ((1, 1, 0), 'STEAL', 2)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/datacollector.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/datacollector1.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/datacollector(0, 'TESTIFIES', ((0, 0, 0), 'STEAL', 1)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/datacollector(0, 'TESTIFIES', ((0, 0, 1), 'STEAL', 2)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/datacollector(0, 'TESTIFIES', ((0, 0, 1), 'STEAL', 3)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/datacollector(0, 'TESTIFIES', ((0, 0, 1), 'STEAL', 9)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/datacollector(0, 'TESTIFIES', ((1, 1, 0), 'STEAL', 2)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/stealing_testimony.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/stealing_testimony_1.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/test(0, 'TESTIFIES', ((0, 0, 0), 'STEAL', 1)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/test(0, 'TESTIFIES', ((0, 0, 0), 'STEAL', 2)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/test(0, 'TESTIFIES', ((0, 0, 0), 'STEAL', 3)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/test(0, 'TESTIFIES', ((0, 0, 0), 'STEAL', 4)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/test(0, 'TESTIFIES', ((0, 0, 0), 'STEAL', 5)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/test(0, 'TESTIFIES', ((0, 0, 0), 'STEAL', 6)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/test(0, 'TESTIFIES', ((0, 0, 0), 'STEAL', 7)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/test(0, 'TESTIFIES', ((0, 0, 1), 'STEAL', 0)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/test(0, 'TESTIFIES', ((0, 0, 1), 'STEAL', 2)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/test(0, 'TESTIFIES', ((0, 1, 1), 'STEAL', 2)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/test(0, 'TESTIFIES', ((0, 1, 1), 'STEAL', 4)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/test(0, 'TESTIFIES', ((0, 1, 1), 'STEAL', 6)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/test(0, 'TESTIFIES', ((1, 0, 0), 'STEAL', 5)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/test(0, 'TESTIFIES', ((1, 0, 1), 'STEAL', 4)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/test(1, 'TESTIFIES', ((1, 0, 1), 'STEAL', 0)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/test(1, 'TESTIFIES', ((1, 0, 1), 'STEAL', 6)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
