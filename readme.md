@@ -16,3 +16,5 @@ This is directly based on the comparable NetLogo model:
 
 Wilensky, U. (1997). NetLogo Fire model. http://ccl.northwestern.edu/netlogo/models/Fire. Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
 
+
+<img width="829" alt="Screenshot 2025-04-06 at 20 00 29" src="https://github.com/user-attachments/assets/51dac7b5-af90-4a7a-949b-055274c2cea0" />
