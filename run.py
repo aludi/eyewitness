@@ -335,6 +335,7 @@ class Experiment():
         return model
 
 def run_visual():
+    # this calls "server.py" and lanches it
     server.launch(open_browser=True)
 
 

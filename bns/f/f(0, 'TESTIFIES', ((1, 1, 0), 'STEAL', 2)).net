@@ -1,0 +1,92 @@
+
+net {
+  name = unnamedBN;
+  software = "aGrUM 1.17.2";
+  node_size = (50 50);
+}
+
+node Hypothesis {
+   states = (False True );
+   label = "Hypothesis";
+   ID = "Hypothesis";
+}
+
+node Testimony {
+   states = (False None True );
+   label = "Testimony";
+   ID = "Testimony";
+}
+
+node Reliable {
+   states = (False None True );
+   label = "Reliable";
+   ID = "Reliable";
+}
+
+node visionReliability {
+   states = (None True );
+   label = "visionReliability";
+   ID = "visionReliability";
+}
+
+node objectivityReliability {
+   states = (False None True );
+   label = "objectivityReliability";
+   ID = "objectivityReliability";
+}
+
+node veracityReliability {
+   states = (False None True );
+   label = "veracityReliability";
+   ID = "veracityReliability";
+}
+
+potential (Hypothesis) {
+   data = (  0.92515 0.0748503);
+}
+
+potential ( Testimony | Hypothesis   Reliable   ) {
+   data = 
+   (((   0.850256   0.00102564   0.148718)   % Reliable=False   Hypothesis=False   
+   (   0.000152138   0.999696   0.000152138)   % Reliable=None   Hypothesis=False   
+   (   0.997484   0.00125786   0.00125786))   % Reliable=True   Hypothesis=False   
+   ((   0.693989   0.00546448   0.300546)   % Reliable=False   Hypothesis=True   
+   (   0.00220751   0.995585   0.00220751)   % Reliable=None   Hypothesis=True   
+   (   0.025641   0.025641   0.948718)));   % Reliable=True   Hypothesis=True   
+}
+
+potential ( Reliable | visionReliability   objectivityReliability   veracityReliability   ) {
+   data = 
+   ((((   0.333333   0.333333   0.333333)   % veracityReliability=False   objectivityReliability=False   visionReliability=None   
+   (   0.333333   0.333333   0.333333)   % veracityReliability=None   objectivityReliability=False   visionReliability=None   
+   (   0.333333   0.333333   0.333333))   % veracityReliability=True   objectivityReliability=False   visionReliability=None   
+   ((   0.333333   0.333333   0.333333)   % veracityReliability=False   objectivityReliability=None   visionReliability=None   
+   (   4.74766e-05   0.999905   4.74766e-05)   % veracityReliability=None   objectivityReliability=None   visionReliability=None   
+   (   0.333333   0.333333   0.333333))   % veracityReliability=True   objectivityReliability=None   visionReliability=None   
+   ((   0.333333   0.333333   0.333333)   % veracityReliability=False   objectivityReliability=True   visionReliability=None   
+   (   0.333333   0.333333   0.333333)   % veracityReliability=None   objectivityReliability=True   visionReliability=None   
+   (   0.333333   0.333333   0.333333)))   % veracityReliability=True   objectivityReliability=True   visionReliability=None   
+   (((   0.997693   0.0011534   0.0011534)   % veracityReliability=False   objectivityReliability=False   visionReliability=True   
+   (   0.333333   0.333333   0.333333)   % veracityReliability=None   objectivityReliability=False   visionReliability=True   
+   (   0.998153   0.000923361   0.000923361))   % veracityReliability=True   objectivityReliability=False   visionReliability=True   
+   ((   0.333333   0.333333   0.333333)   % veracityReliability=False   objectivityReliability=None   visionReliability=True   
+   (   0.333333   0.333333   0.333333)   % veracityReliability=None   objectivityReliability=None   visionReliability=True   
+   (   0.333333   0.333333   0.333333))   % veracityReliability=True   objectivityReliability=None   visionReliability=True   
+   ((   0.99868   0.000660066   0.000660066)   % veracityReliability=False   objectivityReliability=True   visionReliability=True   
+   (   0.333333   0.333333   0.333333)   % veracityReliability=None   objectivityReliability=True   visionReliability=True   
+   (   0.000402091   0.000402091   0.999196))));   % veracityReliability=True   objectivityReliability=True   visionReliability=True   
+}
+
+potential (visionReliability) {
+   data = (  0.779441 0.220559);
+}
+
+potential (objectivityReliability) {
+   data = (  0.0725216 0.779108 0.14837);
+}
+
+potential (veracityReliability) {
+   data = (  0.0884897 0.779108 0.132402);
+}
+
+

@@ -1,0 +1,101 @@
+
+net {
+name = "bn";
+  software = "aGrUM 1.17.2";
+  node_size = (50 50);
+}
+
+node Hypothesis {
+   states =("False" "True" );
+   label = "Hypothesis";
+   ID = "Hypothesis";
+}
+
+node Testimony {
+   states =("False" "None" "True" );
+   label = "Testimony";
+   ID = "Testimony";
+}
+
+node Reliable {
+   states =("False" "None" "True" );
+   label = "Reliable";
+   ID = "Reliable";
+}
+
+node visionReliability {
+   states =("False" "None" "True" );
+   label = "visionReliability";
+   ID = "visionReliability";
+}
+
+node objectivityReliability {
+   states =("False" "None" "True" );
+   label = "objectivityReliability";
+   ID = "objectivityReliability";
+}
+
+node veracityReliability {
+   states =("False" "None" "True" );
+   label = "veracityReliability";
+   ID = "veracityReliability";
+}
+
+potential (Hypothesis) {
+   data = (  0.891218 0.108782);
+}
+
+potential ( Testimony | Hypothesis   Reliable   ) {
+   data = 
+   (((   0.922675   0.00104493   0.07628)   % Reliable=False   Hypothesis=False   
+   (   0.000150898   0.999698   0.000150898)   % Reliable=None   Hypothesis=False   
+   (   0.995585   0.00220751   0.00220751))   % Reliable=True   Hypothesis=False   
+   ((   0.496599   0.00680272   0.496599)   % Reliable=False   Hypothesis=True   
+   (   0.0015361   0.996928   0.0015361)   % Reliable=None   Hypothesis=True   
+   (   0.00546448   0.00546448   0.989071)));   % Reliable=True   Hypothesis=True   
+}
+
+potential ( Reliable | visionReliability   objectivityReliability   veracityReliability   ) {
+   data = 
+   ((((   0.333333   0.333333   0.333333)   % veracityReliability=False   objectivityReliability=False   visionReliability=False   
+   (   0.333333   0.333333   0.333333)   % veracityReliability=None   objectivityReliability=False   visionReliability=False   
+   (   0.333333   0.333333   0.333333))   % veracityReliability=True   objectivityReliability=False   visionReliability=False   
+   ((   0.333333   0.333333   0.333333)   % veracityReliability=False   objectivityReliability=None   visionReliability=False   
+   (   0.333333   0.333333   0.333333)   % veracityReliability=None   objectivityReliability=None   visionReliability=False   
+   (   0.333333   0.333333   0.333333))   % veracityReliability=True   objectivityReliability=None   visionReliability=False   
+   ((   0.97619   0.0119048   0.0119048)   % veracityReliability=False   objectivityReliability=True   visionReliability=False   
+   (   0.333333   0.333333   0.333333)   % veracityReliability=None   objectivityReliability=True   visionReliability=False   
+   (   0.97619   0.0119048   0.0119048)))   % veracityReliability=True   objectivityReliability=True   visionReliability=False   
+   (((   0.333333   0.333333   0.333333)   % veracityReliability=False   objectivityReliability=False   visionReliability=None   
+   (   0.333333   0.333333   0.333333)   % veracityReliability=None   objectivityReliability=False   visionReliability=None   
+   (   0.333333   0.333333   0.333333))   % veracityReliability=True   objectivityReliability=False   visionReliability=None   
+   ((   0.333333   0.333333   0.333333)   % veracityReliability=False   objectivityReliability=None   visionReliability=None   
+   (   3.05558e-05   0.999939   3.05558e-05)   % veracityReliability=None   objectivityReliability=None   visionReliability=None   
+   (   0.333333   0.333333   0.333333))   % veracityReliability=True   objectivityReliability=None   visionReliability=None   
+   ((   0.333333   0.333333   0.333333)   % veracityReliability=False   objectivityReliability=True   visionReliability=None   
+   (   0.333333   0.333333   0.333333)   % veracityReliability=None   objectivityReliability=True   visionReliability=None   
+   (   0.333333   0.333333   0.333333)))   % veracityReliability=True   objectivityReliability=True   visionReliability=None   
+   (((   0.998106   0.00094697   0.00094697)   % veracityReliability=False   objectivityReliability=False   visionReliability=True   
+   (   0.333333   0.333333   0.333333)   % veracityReliability=None   objectivityReliability=False   visionReliability=True   
+   (   0.998551   0.000724638   0.000724638))   % veracityReliability=True   objectivityReliability=False   visionReliability=True   
+   ((   0.333333   0.333333   0.333333)   % veracityReliability=False   objectivityReliability=None   visionReliability=True   
+   (   0.333333   0.333333   0.333333)   % veracityReliability=None   objectivityReliability=None   visionReliability=True   
+   (   0.333333   0.333333   0.333333))   % veracityReliability=True   objectivityReliability=None   visionReliability=True   
+   ((   0.99915   0.00042517   0.00042517)   % veracityReliability=False   objectivityReliability=True   visionReliability=True   
+   (   0.333333   0.333333   0.333333)   % veracityReliability=None   objectivityReliability=True   visionReliability=True   
+   (   0.000352361   0.000352361   0.999295))));   % veracityReliability=True   objectivityReliability=True   visionReliability=True   
+}
+
+potential (visionReliability) {
+   data = (  0.00465735 0.807053 0.18829);
+}
+
+potential (objectivityReliability) {
+   data = (  0.0605456 0.807053 0.132402);
+}
+
+potential (veracityReliability) {
+   data = (  0.0864937 0.807053 0.106454);
+}
+
+

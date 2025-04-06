@@ -1,0 +1,71 @@
+
+net {
+name = "bn";
+  software = "aGrUM 1.17.2";
+  node_size = (50 50);
+}
+
+node Hypothesis {
+   states =("False" "True" );
+   label = "Hypothesis";
+   ID = "Hypothesis";
+}
+
+node Testimony {
+   states =("None" );
+   label = "Testimony";
+   ID = "Testimony";
+}
+
+node Reliable {
+   states =("None" );
+   label = "Reliable";
+   ID = "Reliable";
+}
+
+node visionReliability {
+   states =("None" );
+   label = "visionReliability";
+   ID = "visionReliability";
+}
+
+node objectivityReliability {
+   states =("None" );
+   label = "objectivityReliability";
+   ID = "objectivityReliability";
+}
+
+node veracityReliability {
+   states =("None" );
+   label = "veracityReliability";
+   ID = "veracityReliability";
+}
+
+potential (Hypothesis) {
+   data = (  0.889222 0.110778);
+}
+
+potential ( Testimony | Hypothesis   Reliable   ) {
+   data = 
+   (((   1))   % Reliable=None   Hypothesis=False   
+   ((   1)));   % Reliable=None   Hypothesis=True   
+}
+
+potential ( Reliable | visionReliability   objectivityReliability   veracityReliability   ) {
+   data = 
+   ((((   1))));   % veracityReliability=None   objectivityReliability=None   visionReliability=None   
+}
+
+potential (visionReliability) {
+   data = (  1);
+}
+
+potential (objectivityReliability) {
+   data = (  1);
+}
+
+potential (veracityReliability) {
+   data = (  1);
+}
+
+

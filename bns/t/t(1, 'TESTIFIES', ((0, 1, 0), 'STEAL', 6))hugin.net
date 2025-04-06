@@ -1,0 +1,94 @@
+
+net {
+name = "bn";
+  software = "aGrUM 1.17.2";
+  node_size = (50 50);
+}
+
+node Hypothesis {
+   states =("False" "True" );
+   label = "Hypothesis";
+   ID = "Hypothesis";
+}
+
+node Testimony {
+   states =("False" "True" );
+   label = "Testimony";
+   ID = "Testimony";
+}
+
+node testimony_seen {
+   states =("False" "True" );
+   label = "testimony_seen";
+   ID = "testimony_seen";
+}
+
+node testimony_objectivity {
+   states =("False" "True" );
+   label = "testimony_objectivity";
+   ID = "testimony_objectivity";
+}
+
+node visionReliability {
+   states =("None" "True" );
+   label = "visionReliability";
+   ID = "visionReliability";
+}
+
+node objectivityReliability {
+   states =("False" "None" "True" );
+   label = "objectivityReliability";
+   ID = "objectivityReliability";
+}
+
+node veracityReliability {
+   states =("False" "None" "True" );
+   label = "veracityReliability";
+   ID = "veracityReliability";
+}
+
+potential (Hypothesis) {
+   data = (  0.899202 0.100798);
+}
+
+potential ( Testimony | testimony_objectivity   veracityReliability   ) {
+   data = 
+   (((   0.886503   0.113497)   % veracityReliability=False   testimony_objectivity=False   
+   (   0.999799   0.000200723)   % veracityReliability=None   testimony_objectivity=False   
+   (   0.998233   0.00176678))   % veracityReliability=True   testimony_objectivity=False   
+   ((   0.0714286   0.928571)   % veracityReliability=False   testimony_objectivity=True   
+   (   0.5   0.5)   % veracityReliability=None   testimony_objectivity=True   
+   (   0.00819672   0.991803)));   % veracityReliability=True   testimony_objectivity=True   
+}
+
+potential ( testimony_seen | Hypothesis   visionReliability   ) {
+   data = 
+   (((   0.999671   0.000328731)   % visionReliability=None   Hypothesis=False   
+   (   0.998221   0.00177936))   % visionReliability=True   Hypothesis=False   
+   ((   0.996454   0.0035461)   % visionReliability=None   Hypothesis=True   
+   (   0.00819672   0.991803)));   % visionReliability=True   Hypothesis=True   
+}
+
+potential ( testimony_objectivity | testimony_seen   objectivityReliability   ) {
+   data = 
+   (((   0.955172   0.0448276)   % objectivityReliability=False   testimony_seen=False   
+   (   0.999799   0.000200723)   % objectivityReliability=None   testimony_seen=False   
+   (   0.998195   0.00180505))   % objectivityReliability=True   testimony_seen=False   
+   ((   0.709302   0.290698)   % objectivityReliability=False   testimony_seen=True   
+   (   0.5   0.5)   % objectivityReliability=None   testimony_seen=True   
+   (   0.0102041   0.989796)));   % objectivityReliability=True   testimony_seen=True   
+}
+
+potential (visionReliability) {
+   data = (  0.829341 0.170659);
+}
+
+potential (objectivityReliability) {
+   data = (  0.0625416 0.829009 0.10845);
+}
+
+potential (veracityReliability) {
+   data = (  0.0565536 0.829009 0.114438);
+}
+
+

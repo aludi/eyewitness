@@ -1,0 +1,44 @@
+
+net {
+  name = unnamedBN;
+  software = "aGrUM 1.17.2";
+  node_size = (50 50);
+}
+
+node Hypothesis {
+   states = (False True );
+   label = "Hypothesis";
+   ID = "Hypothesis";
+}
+
+node Testimony {
+   states = (False None True );
+   label = "Testimony";
+   ID = "Testimony";
+}
+
+node Reliable {
+   states = (False None True );
+   label = "Reliable";
+   ID = "Reliable";
+}
+
+potential (Hypothesis) {
+   data = (  0.919162 0.0808383);
+}
+
+potential ( Testimony | Hypothesis   Reliable   ) {
+   data = 
+   (((   0.946514   0.00095511   0.052531)   % Reliable=False   Hypothesis=False   
+   (   0.000148082   0.999704   0.000148082)   % Reliable=None   Hypothesis=False   
+   (   0.99591   0.00204499   0.00204499))   % Reliable=True   Hypothesis=False   
+   ((   0.59707   0.003663   0.399267)   % Reliable=False   Hypothesis=True   
+   (   0.00289855   0.994203   0.00289855)   % Reliable=None   Hypothesis=True   
+   (   0.00900901   0.00900901   0.981982)));   % Reliable=True   Hypothesis=True   
+}
+
+potential (Reliable) {
+   data = (  0.146374 0.787092 0.0665336);
+}
+
+

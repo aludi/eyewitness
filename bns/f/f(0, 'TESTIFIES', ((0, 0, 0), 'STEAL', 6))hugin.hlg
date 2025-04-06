@@ -1,0 +1,87 @@
+Mon Mar 31 16:14:32 2025
+
+
+Moral links:
+
+    Marrying Reliable and Hypothesis
+    Marrying objectivityReliability and visionReliability
+    Marrying veracityReliability and visionReliability
+    Marrying veracityReliability and objectivityReliability
+
+
+Triangulating prime component with 3 members:
+    Hypothesis, Testimony, Reliable
+This component is a clique of cost 18
+
+Triangulating prime component with 4 members:
+    Reliable, visionReliability, objectivityReliability, veracityReliability
+This component is a clique of cost 81
+
+
+Total cost of triangulation for all prime components is 99
+
+
+Cliques:
+
+Clique 2, 3 members, table size = 18:
+    Reliable, Hypothesis, Testimony
+
+Clique 1, 4 members, table size = 81:
+    Reliable, visionReliability, objectivityReliability, veracityReliability
+
+Total clique table size: 99
+
+
+The junction forest:
+
+Creating junction tree with clique 2 as root ...
+
+Cliques 1 and 2 linked, separator has 1 member and table size = 3:
+    Reliable
+
+
+Assignment of potentials to cliques:
+
+    Node Hypothesis assigned to clique 2
+    Node Testimony assigned to clique 2
+    Node Reliable assigned to clique 1
+    Node visionReliability assigned to clique 1
+    Node objectivityReliability assigned to clique 1
+    Node veracityReliability assigned to clique 1
+
+
+Checking conditional probability potentials:
+
+    No errors found
+
+
+Beliefs for chance nodes:
+
+    Hypothesis:
+	False      0.927146
+	True       0.0728543
+
+    Testimony:
+	False      0.32178
+	None       0.641512
+	True       0.0367081
+
+    Reliable:
+	False      0.185012
+	None       0.632576
+	True       0.182412
+
+    visionReliability:
+	False      0.00465735
+	None       0.769128
+	True       0.226214
+
+    objectivityReliability:
+	False      0.0864937
+	None       0.769128
+	True       0.144378
+
+    veracityReliability:
+	False      0.0844977
+	None       0.769128
+	True       0.146374

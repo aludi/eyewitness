@@ -1,0 +1,54 @@
+Thu Mar 27 14:43:00 2025
+
+
+Moral links:
+
+    Marrying Reliable and Hypothesis
+
+
+Triangulating prime component with 3 members:
+    Hypothesis, Testimony, Reliable
+This component is a clique of cost 8
+
+
+Total cost of triangulation for all prime components is 8
+
+
+Cliques:
+
+Clique 1, 3 members, table size = 8:
+    Hypothesis, Testimony, Reliable
+
+Total clique table size: 8
+
+
+The junction forest:
+
+Creating junction tree with clique 1 as root ...
+
+
+Assignment of potentials to cliques:
+
+    Node Hypothesis assigned to clique 1
+    Node Testimony assigned to clique 1
+    Node Reliable assigned to clique 1
+
+
+Checking conditional probability potentials:
+
+    No errors found
+
+
+Beliefs for chance nodes:
+
+    Hypothesis:
+	False      0.927146
+	True       0.0728543
+
+    Testimony:
+	False      0.973786
+	True       0.0262136
+
+    Reliable:
+	False      0.907186
+	True       0.0928144

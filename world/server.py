@@ -49,28 +49,33 @@ def forest_fire_portrayal(agent):
 
     return portrayal
 
+
 class Text(TextElement):
     def render(self, model):
         str_ = ""
         for agent in model.people_agents:
+            # the \t or \n in the string below do not show up in the webpage viz.
             str_ = str_ + str(agent.profile) + " : " + str(agent.state) + str(agent.stolen_goods) +",\t"
         return str_
 
 
-
+# create the simulation grid
 canvas_element = mesa.visualization.CanvasGrid(
     forest_fire_portrayal, 50, 50, 500, 500
 )
 
+# create the text that describes what the agents are doing
 text = Text()
 
-
+# model params, such as the height, width of the simulation, and the number of agents (hardcoded for the visual run).
 model_params = {
     "height": 50,
     "width": 50,
     "density": mesa.visualization.Slider("Tree density", 0.00001, 0.01, 1.0, 0.01),
     "num_agents":10
 }
+
+# this instantiates the server, with the agent grid (canvas_element) and the text that describes what the agents are doing
 server = mesa.visualization.ModularServer(
     ForestFire, [canvas_element, text], "Forest Fire", model_params
 )
