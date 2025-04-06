@@ -6,6 +6,7 @@ import ast
 import pyAgrum as gum
 import numpy as np
 import pyAgrum.lib.image as gumimage
+import cairo
 
 class Experiment():
 
@@ -149,6 +150,8 @@ class Experiment():
         learner.useNoPrior()
         bn = learner.learnBN()
         gum.saveBN(bn, f"bns/{struct.lower()}/{struct.lower()}{hypotheses["testifies"]}.net")
+        #gumimage.exportInference(bn, f"bns/{struct.lower()}/{struct.lower()}{hypotheses["testifies"]}.png")
+
         self.convert_networks_to_hugin(f"bns/{struct.lower()}/{struct.lower()}{hypotheses["testifies"]}")
 
     def permute_observations(self, variables, df1):
@@ -347,8 +350,8 @@ def run_experiment():
 pd.set_option('display.max_columns', None)  # Show all columns
 pd.set_option('display.max_colwidth', None)  # Don't truncate content within columns
 
-#run_experiment()
+run_experiment()
 
-run_visual()
+#run_visual()
 
 

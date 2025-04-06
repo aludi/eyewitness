@@ -10,6 +10,28 @@ import time
 from itertools import product
 
 
+
+''' 
+
+
+THIS FILE IS NOT USED AT ALL AT THE MOMENT
+BNS ARE GENERATED IN RUN.PY (DONT ASK ME WHY)
+
+
+'''
+
+
+
+
+
+
+
+
+
+
+
+
+####
 df = pd.read_csv("data/stealing_testimony_1.csv")
 
 df1 = df[df["time_testimony"] == 40]
@@ -381,9 +403,6 @@ for hypothesis in df1['hypothesis'].unique():
             dict_of_bn_timmer[hypothesis]["reliableVeracity"] = sub_df["reliableVeracity"].value_counts()/sub_df["reliableVeracity"].value_counts().sum()
 
 
-
-
-
 dict_of_bn_hepler= {}
 
 for hypothesis in df1['hypothesis'].unique():
@@ -555,198 +574,4 @@ for key in dict_of_bn_F.keys():
         gumimage.exportInference(bn, f"bns/F{dict_of_bn_F[key]["testimony"]}.png")
     except Exception as e:
         print(e)
-
-
     print(bn)
-
-
-
-exit()
-for key in dict_of_bn_timmer.keys():
-    bn = gum.BayesNet(f"{dict_of_bn_timmer[key]["testimony"]}")
-    for key_key in dict_of_bn_timmer[key].keys():
-        if key_key in ["H", "Reliability", "reliableVision", "reliableMemory",
-                       "reliableVeracity", "Testimony"]:
-            id_c = bn.add(gum.LabelizedVariable(key_key, key_key, 2))
-    bn.addArc("H", "Testimony")
-    bn.addArc("Reliability", "Testimony")
-    bn.addArc("reliableVision", "Reliability")
-    bn.addArc("reliableMemory", "Reliability")
-    bn.addArc("reliableVeracity", "Reliability")
-
-    for key_key in ["H", "Reliability", "Testimony", "reliableVision", "reliableMemory",
-                       "reliableVeracity"]:
-        print(key_key)
-        if isinstance(dict_of_bn_timmer[key][key_key], pd.Series):
-            #print("test")
-            print(dict_of_bn_timmer[key][key_key])
-            print(dict_of_bn_timmer[key][key_key][True])
-            print(dict_of_bn_timmer[key][key_key][False])
-
-            print(dict_of_bn_timmer[key][key_key].tolist())
-
-            bn.cpt(key_key).fillWith([dict_of_bn_timmer[key][key_key][False], dict_of_bn_timmer[key][key_key][True]]) # false true
-
-        else:
-            if type(dict_of_bn_timmer[key][key_key]) is not bool:
-                for index_values, row in dict_of_bn_timmer[key][key_key].iterrows():
-                    print(dict_of_bn_timmer[key][key_key])
-                    for index_values, row in dict_of_bn_timmer[key][key_key].iterrows():
-                        print(len(dict_of_bn_timmer[key][key_key]))
-                        if len(dict_of_bn_timmer[key][key_key]) < 4:
-                            continue
-                        # Convert index values into a dictionary dynamically
-                        index_dict = dict(zip(dict_of_bn_timmer[key][key_key].index.names, index_values))
-
-                        # Convert row values to a dictionary
-                        row_dict = row.to_dict()
-                        print(index_dict, list(row_dict.values()))
-                        if len(list(row_dict.values())) == 2:
-                            bn.cpt(key_key)[index_dict] = list(row_dict.values())
-                        else:
-                            continue
-
-                #print(f"Keys: {index_dict}, Values: {row_dict}")
-    gum.saveBN(bn,f"bns/T{dict_of_bn_timmer[key]["testimony"]}.net")
-    print(bn)
-
-exit()
-
-
-
-
-
-
-
-df["everstolen"] = None
-df2 = df[(df["action1"] == "stealing from") | (df["action1"] == "not stealing from")]
-
-steal_groups = df2.groupby(['run', 'subj_agent', 'object_agent'])['action1'].transform(lambda x: 'stealing from' in x.values)
-print(steal_groups)
-df.loc[df2.index,'everstolen'] = steal_groups
-
-print(df["everstolen"].unique())
-print(df[["run", "subj_agent", "object_agent", "indirect_agent", "action1", "action2", "everstolen"]])
-exit()
-
-df.to_csv("data/stealing_testimony_12test.csv")
-dff = df
-
-
-print(dff["run"].value_counts())
-print(dff["action1"].value_counts(normalize=True))
-print(dff["everstolen"].value_counts(normalize=True))
-
-print(dff.groupby("run")["action1"].value_counts(normalize=True))
-
-print(dff.groupby("run")["everstolen"].value_counts(normalize=True))
-
-print(dff.groupby("run")["action1"].value_counts(normalize=True).groupby(level=1).mean())
-
-
-df1 = dff[dff["time_testimony"] == 40]
-print(df1)
-exit()
-df1["ReliabilityPerturbed"] = df1[["vision_perturb", "memory_perturb", "veracity_perturb"]].max(axis=1)
-df1["Reliability"] = ~df1["ReliabilityPerturbed"]
-print(df1)
-df1 = df1[(df1["everstolen"] == True) & ((df1["action1"] == "observed") | (df1["action1"]=="not observed")) & (df1["action2"] == "stealing from")]
-print(df1[["subj_agent", "action1", "obj_agent_prof", "action2", "testified_agent", "Reliability"]])
-x = df1["obj_agent_prof"] == df1["testified_agent"]
-print(x)
-
-
-print(dff.groupby("everstolen")["everstolen"].value_counts(normalize=True))
-
-
-exit()
-
-
-# Select rows that do not match the condition (contrast rows)
-
-# de kans op stelen is, voor de gegeven parameters,
-# als je kijkt naar alle mogelijke daders is het 0.0524.
-# maar als je kijkt naar "werd er gestolen van x?"
-
-# de kans dat 1 gegeven dader van 1 gegeven slachtoffer steelt is 0.000524
-# als in: 0.0524*0.1*0.1, namelijk kans op stelen in simulatie, dan kies een random dader, en kies een random slachtoffer
-# individuen kunnen daarvan afwijken. Maar dus de kans H moet 0.00052 zijn
-
-
-# maar nu de situatie: gegeven dat de hypothese niet waar is. Wil je dan de kans op: we weten dat er is gestolen?
-# of ook al die andere situaties meerekenen (namelijk 0 steelt niet van 1, wat is de kans dat 2 zegt dat 0 van 1 steelt?
-# okay maar eigenlijk <1,1,1> steelt niet van 1, wat is de kans dat 2 zegt dat <1,1,1> van 1 steelt?
-# er is een kans dat 2 dit zegt, maar alleen in situaties waar al gestolen word (namelijk situaties waar ze het verkeerd heeft gezien/gelogen/etc
-# impliciet lijkt dit samen te vallen.. met dat er gestolen word. Maar dat is in de echte wereld dus niet noodzakelijkerwijs zo
-
-print()
-exit()
-
-
-dff1 = dff[(dff["action1"] == "stealing from")]
-
-print(dff1["subj_agent"].value_counts()/len(dff1))
-print((dff1["subj_agent"].value_counts()/len(dff1)).sum())
-print(dff1["object_agent"].value_counts()/len(dff1))
-print((dff1["object_agent"].value_counts()/len(dff1)).sum())
-
-
-dff1 = dff[(dff["action1"] == "not stealing from")]
-
-print(dff1["subj_agent"].value_counts()/len(dff1))
-print((dff1["subj_agent"].value_counts()/len(dff1)).sum())
-print(dff1["object_agent"].value_counts()/len(dff1))
-print((dff1["object_agent"].value_counts()/len(dff1)).sum())
-
-exit()
-
-
-# Concatenate the filtered rows from df_new to df_original
-
-
-
-df12.to_csv("data/stealing_testimony_12.csv")
-
-exit()
-df1 = df[(df["action1"] == "not stealing from") | (df["action1"] == "stealing from")]
-print(df1["action1"].value_counts())
-
-df11 = df[df["action1"] == "stealing from"]
-df11.to_csv("data/stealing_testimony_2.csv")
-
-print(df11)
-
-df2 = df[((df["action1"] == "not observed") | (df["action1"] == "observed"))]
-#print(df2)
-
-print(df2["action1"].value_counts())
-print(df2["action2"].value_counts())
-exit()
-
-df["ReliabilityPerturbed"] = df[["vision_perturb", "memory_perturb", "veracity_perturb"]].max(axis=1)
-df["Reliability"] = ~df["ReliabilityPerturbed"]
-df["Hypothesis"] = df[["testified_thief","victim"]].astype(str).agg(' stole from '.join, axis=1)
-df["Report"] = df[["testified_thief","victim"]].astype(str).agg(' stole from '.join, axis=1)
-df["ValHypothesis"] = df["real_thief"] == df["testified_thief"]
-
-hb_df = df[['Hypothesis', "ValHypothesis", "Report", "Reliability"]].copy()
-
-print(hb_df["ValHypothesis"].value_counts()/len(hb_df))
-print(hb_df["Reliability"].value_counts()/len(hb_df))
-print(hb_df.groupby(["ValHypothesis", "Reliability"]).size()/len(hb_df))
-
-
-
-
-'''
-hyp_rep = df[["Hypothesis", "Report"]].drop_duplicates()
-for _, row in hyp_rep.iterrows():
-    # Filter DataFrame for the current combination
-    filtered_df = hb_df[(hb_df['Hypothesis'] == row['Hypothesis']) & (hb_df['Report'] == row['Report'])]
-
-    # Display the result for the current combination
-    print(f"Filtered rows for Hypothesis={row['Hypothesis']} and report={row['Report']}:\n")
-    print(filtered_df, "\n")
-'''
-
-hb_df.to_csv("data/hb_data.csv", index=False)
