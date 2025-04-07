@@ -16,7 +16,7 @@ class Experiment():
         self.simulation_time = 40
         self.simulation_data = None
         self.final_model = None
-        self.bn_types = ["HB", "F", "T"] #H
+        self.bn_types = ["H"]#["HB", "F", "T"] #H
 
 
     def collect_data(self, runs):
@@ -76,8 +76,11 @@ class Experiment():
 
         elif bn == "H":
             variables["stealhyp"] = h
+            variables["testimony_seen"] = (witness_agent, "SEES", h)
             variables["observed"] = (witness_agent, "TESTIFIES", h)
             variables["testifies"] = (witness_agent, "TESTIFIES", h)
+            variables["testimony_objectivity"] = (witness_agent, "OBJECTIVE", h)
+            variables["testimony_veracity"] = (witness_agent, "VERACITY", h)
             variables["visiongood"] = (witness_agent, "VISION", h)
             variables["objectivegood"] = (witness_agent, "OBJECTIVITY", h)
             variables['veracitygood'] = (witness_agent, "VERACITY", h)
@@ -125,8 +128,17 @@ class Experiment():
                                  ("objectivityReliability", "testimony_objectivity"),
                                  ("testimony_objectivity", "Testimony"), ("veracityReliability", "Testimony")]
         elif struct == "H":
-            print("Hepler structure not implemented yet")
-            exit()
+            events = ["Hypothesis", "Testimony", "testimony_seen", "testimony_objectivity",
+                      "visionReliability", "objectivityReliability",
+                      "veracityReliability", "testimony_veracity"]
+
+            arcs["mandatory"] = [("Hypothesis", "testimony_seen"), ("visionReliability", "testimony_seen"),
+                                 ("testimony_seen", "testimony_objectivity"),
+                                 ("objectivityReliability", "testimony_objectivity"),
+                                 ("testimony_objectivity", "testimony_veracity"), ("veracityReliability", "testimony_veracity"),
+                                 ("testimony_veracity", "Testimony")]
+            #print("Hepler structure not implemented yet")
+            #exit()
         else:
             print("unknown structure passed to BN creation")
             exit()
@@ -289,7 +301,74 @@ class Experiment():
             self.create_BN_from_df(df2, "T", variables)
 
         elif bn == "H":
-            pass
+
+            #print(df1["vision_observation"])
+            df1["testimony_seen"] = df1['vision_observation'].apply(
+                ast.literal_eval)  # evaluate not as string but as list of tuples
+            v = variables["testimony_seen"]
+            (a, b, (c, d, e)) = v
+
+            df1["originalvision"] = df1["vision_observation"]
+            df1["testimony_seen"] = df1['testimony_seen'].apply(
+                lambda x: any(len(t) >= 4 and (c, str(d), e) == (t[1], t[2], t[3]) for t in x)
+            )
+            df1["testimony_objectivity"] = df1['objectivity'].apply(
+                ast.literal_eval)  # evaluate not as string but as list of tuples
+            v = variables["testimony_objectivity"]
+            (a, b, (c, d, e)) = v
+
+            df1["originalobjectivity"] = df1["objectivity"]
+            df1["testimony_objectivity"] = df1['testimony_objectivity'].apply(
+                lambda x: any(len(t) >= 4 and (c, str(d), e) == (t[1], t[2], t[3]) for t in x)
+            )
+
+            df1["testimony_veracity"] = df1['veracity'].apply(ast.literal_eval)  # evaluate not as string but as list of tuples
+            #print(df1["testimony_veracity"].apply(type))
+            v = variables["testimony_veracity"]
+            (a, b, (c, d, e)) = v   #0 VERACITY (0, 0, 0) STEAL 1
+
+
+            df1["testifies"] = df1['testimony_veracity'].apply(     # there is a testimony about the stealing event that is targeting the agent e
+                lambda x: any(len(t) >= 4 and (str(d), e) == (t[2], t[3]) for t in x)
+            )
+            #df1["testifies"] = df1['testimony_veracity'].apply(lambda x: x != [])   # TODO: now I just check if the agent does not testify, but specifically it should not testify about the specific stealing
+
+
+            df1["originalVeracity"] = df1["testimony_veracity"]
+            df1["testimony_veracity"] = df1['testimony_veracity'].apply(    # is the testimony about the stealing event where c targeting agent e? -> can this take the value of none?
+                lambda x: any(len(t) >= 4 and (c, str(d), e) == (t[1], t[2], t[3]) for t in x)
+            )
+            df1 = self.permute_observations(variables, df1)
+
+            '''
+            now it will also be false if is is None (no testimony) as well as if it's about someone else?
+            '''
+
+            df1['testimony_veracity'] = df1['testimony_veracity']
+
+            print(variables["stealhyp"])
+            print(df1["veracity"], df1["veracity"].apply(type))
+            print(df1[["testifies", "veracity", "testimony_veracity"]])
+
+
+            df1[["run", variables["stealhyp"], "testifies", "testimony_seen", "visionReliability",
+                 "testimony_objectivity", "objectivityReliability", "veracityReliability", "stealEvents",
+                 "vision_observation",
+                 "testimony_veracity"]].to_csv(f"data/out/datacollector{variables["testifies"]}.csv", index=True)
+            df1["Hypothesis"] = df1[variables["stealhyp"]]
+
+            df1["Testimony"] = df1["testifies"]
+
+            df1[["Hypothesis", "Testimony",
+                 "testimony_seen", "testimony_objectivity",
+                 "visionReliability", "objectivityReliability", "veracityReliability", "testimony_veracity"]].to_csv(
+                f"data/bndata/h/{variables["testifies"]}.csv",
+                index=True)
+            df2 = df1[["Hypothesis", "Testimony", "testimony_seen", "testimony_objectivity",
+                       "visionReliability", "objectivityReliability",
+                       "veracityReliability", "testimony_veracity"]]
+
+            self.create_BN_from_df(df2, "H", variables)
         else:
             print("not implemented")
 
