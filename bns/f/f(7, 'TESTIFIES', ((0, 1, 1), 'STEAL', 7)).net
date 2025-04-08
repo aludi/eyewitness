@@ -12,48 +12,48 @@ node Hypothesis {
 }
 
 node Testimony {
-   states = (None );
+   states = (False );
    label = "Testimony";
    ID = "Testimony";
 }
 
 node Reliable {
-   states = (None );
+   states = (False );
    label = "Reliable";
    ID = "Reliable";
 }
 
 node visionReliability {
-   states = (None );
+   states = (False );
    label = "visionReliability";
    ID = "visionReliability";
 }
 
 node objectivityReliability {
-   states = (None );
+   states = (False );
    label = "objectivityReliability";
    ID = "objectivityReliability";
 }
 
 node veracityReliability {
-   states = (None );
+   states = (False );
    label = "veracityReliability";
    ID = "veracityReliability";
 }
 
 potential (Hypothesis) {
-   data = (  0.889222 0.110778);
+   data = (  0.90824 0.0917603);
 }
 
 potential ( Testimony | Hypothesis   Reliable   ) {
    data = 
-   (((   1))   % Reliable=None   Hypothesis=False   
-   ((   1)));   % Reliable=None   Hypothesis=True   
+   (((   1))   % Reliable=False   Hypothesis=False   
+   ((   1)));   % Reliable=False   Hypothesis=True   
 }
 
 potential ( Reliable | visionReliability   objectivityReliability   veracityReliability   ) {
    data = 
-   ((((   1))));   % veracityReliability=None   objectivityReliability=None   visionReliability=None   
+   ((((   1))));   % veracityReliability=False   objectivityReliability=False   visionReliability=False   
 }
 
 potential (visionReliability) {

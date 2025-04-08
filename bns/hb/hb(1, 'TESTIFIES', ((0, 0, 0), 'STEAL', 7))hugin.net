@@ -12,33 +12,31 @@ node Hypothesis {
 }
 
 node Testimony {
-   states =("False" "None" "True" );
+   states =("False" "True" );
    label = "Testimony";
    ID = "Testimony";
 }
 
 node Reliable {
-   states =("False" "None" "True" );
+   states =("False" "True" );
    label = "Reliable";
    ID = "Reliable";
 }
 
 potential (Hypothesis) {
-   data = (  0.907186 0.0928144);
+   data = (  0.91573 0.0842697);
 }
 
 potential ( Testimony | Hypothesis   Reliable   ) {
    data = 
-   (((   0.925478   0.00100705   0.0735146)   % Reliable=False   Hypothesis=False   
-   (   0.000152138   0.999696   0.000152138)   % Reliable=None   Hypothesis=False   
-   (   0.996748   0.00162602   0.00162602))   % Reliable=True   Hypothesis=False   
-   ((   0.631841   0.00497512   0.363184)   % Reliable=False   Hypothesis=True   
-   (   0.00197239   0.996055   0.00197239)   % Reliable=None   Hypothesis=True   
-   (   0.00775194   0.00775194   0.984496)));   % Reliable=True   Hypothesis=True   
+   (((   0.989159   0.0108406)   % Reliable=False   Hypothesis=False   
+   (   0.998361   0.00163934))   % Reliable=True   Hypothesis=False   
+   ((   0.927948   0.0720524)   % Reliable=False   Hypothesis=True   
+   (   0.0121951   0.987805)));   % Reliable=True   Hypothesis=True   
 }
 
 potential (Reliable) {
-   data = (  0.132402 0.785096 0.0825017);
+   data = (  0.89201 0.10799);
 }
 
 

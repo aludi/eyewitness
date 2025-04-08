@@ -7,16 +7,19 @@ import pyAgrum as gum
 import numpy as np
 import pyAgrum.lib.image as gumimage
 import cairo
+import csv
+import matplotlib.pyplot as plt
+import os
 
 class Experiment():
 
     def __init__(self):
-        self.num_runs = 500
+        self.num_runs = 800
         self.num_agents = 8
         self.simulation_time = 40
         self.simulation_data = None
         self.final_model = None
-        self.bn_types = ["H"]#["HB", "F", "T"] #H
+        self.bn_types = ["HB", "F", "T", "H"] #H
 
 
     def collect_data(self, runs):
@@ -33,6 +36,191 @@ class Experiment():
         self.simulation_data = df
         df.to_csv("data/datacollector.csv", index=True)
         print(df.shape)
+
+    def get_frequency_outcomes(self, df1, evidence):
+        hyp_dict_count = {}
+        hypotheses = self.generate_hypotheses()
+        max_run= df1["run"].max()
+
+        for hypothesis in hypotheses:
+            hyp_dict_count[hypothesis] = (0, 0, 0)
+
+            #print(repr(hypothesis))  # Check internal representation
+            for i in range(0, max_run):  # iterate over all runs
+                #print(i, repr(df1[df1["run"] == i]["ObsStealEvents"].iloc[0]))
+                if hypothesis in df1[df1["run"] == i]["ObsStealEvents"].iloc[0]:
+                    #print("hyp true: ", hypothesis)
+                    (true_count, false_count, tot) = hyp_dict_count[hypothesis]
+                    hyp_dict_count[hypothesis] = (true_count + 1, false_count, tot + 1)
+                else:
+                    #print("hyp false: ", hypothesis)
+                    (true_count, false_count, tot) = hyp_dict_count[hypothesis]
+                    hyp_dict_count[hypothesis] = (true_count, false_count + 1, tot + 1)
+
+                # for witness_agent in range(0, self.num_agents):
+                #    pass
+                # print(hypothesis, witness_agent)
+
+        outcomes = [["Hypothesis", "PTrue", "PFalse", "total"]]
+        for hypothesis in hypotheses:
+            (t, f, tot) = hyp_dict_count[hypothesis]
+            #print(hypothesis, t / tot, f / tot, tot)
+            outcomes.append([hypothesis, t/tot, f/tot, tot])
+
+        if evidence == {}:
+            evidence = "noEvidence"
+        with open(f"data/results/{evidence}.csv", 'w') as f:
+            writer = csv.writer(f)
+            writer.writerows(outcomes)
+
+    def get_frequency_outcomes_given_observation(self, df1, evidence):
+        hyp_dict_count = {}
+        hypotheses = self.generate_hypotheses()
+        max_run= df1["run"].max()
+        df1['ObsVeracity'] = df1['veracity'].apply(ast.literal_eval)
+        df1['ObsVeracity'] = df1['ObsVeracity'].apply(lambda lst: [t[1:] for t in lst])
+        df1['ObsVeracity'] = df1['ObsVeracity'].apply(lambda lst: [(t[0], str(t[1]), t[2]) for t in lst])
+        #print(repr(df1["ObsVeracity"].iloc[0][0]))
+        #exit()
+        for hypothesis in hypotheses:
+            for j in range(0, self.num_agents):
+                hyp_dict_count[f"{j}{hypothesis}"] = (0, 0, 0)
+                for i in range(0, max_run):  # iterate over all runs
+                    #print(hypothesis)
+                    #print(df1[(df1["run"] == i)&(df1["id"]==j)]["ObsVeracity"])
+                    #print(hypothesis in df1[(df1["run"] == i)&(df1["id"]==j)]["ObsVeracity"].iloc[0])   # have to make it a list by indexing to iloc[0]
+                    if hypothesis in df1[(df1["run"] == i)&(df1["id"]==j)]["ObsVeracity"].iloc[0]:
+                        #print(df1[(df1["run"] == i)&(df1["id"]==j)]["ObsStealEvents"].iloc[0])
+                        if hypothesis in df1[(df1["run"] == i)&(df1["id"]==j)]["ObsStealEvents"].iloc[0]:
+                            #print("hyp true: ", j, hypothesis)
+                            (true_count, false_count, tot) = hyp_dict_count[f"{j}{hypothesis}"]
+                            hyp_dict_count[f"{j}{hypothesis}"] = (true_count + 1, false_count, tot + 1)
+                        else:
+                            #print("hyp false: ", j, hypothesis)
+                            (true_count, false_count, tot) = hyp_dict_count[f"{j}{hypothesis}"]
+                            hyp_dict_count[f"{j}{hypothesis}"] = (true_count, false_count + 1, tot + 1)
+
+        outcomes = [["Hypothesis", "PTrue", "PFalse", "total"]]
+        for h in hyp_dict_count.keys():
+            (t, f, tot) = hyp_dict_count[h]
+            print(h, t, f, tot)
+            if tot > 0:
+                print(hypothesis, t / tot, f / tot, tot)
+                outcomes.append([h, t/tot, f/tot, tot])
+
+        with open(f"data/results/{evidence}.csv", 'w') as f:
+            writer = csv.writer(f)
+            writer.writerows(outcomes)
+
+    def get_frequency_outcomes_given_no_observation(self, df1, evidence):
+        hyp_dict_count = {}
+        hypotheses = self.generate_hypotheses()
+        max_run= df1["run"].max()
+        df1['ObsVeracity'] = df1['veracity'].apply(ast.literal_eval)
+        df1['ObsVeracity'] = df1['ObsVeracity'].apply(lambda lst: [t[1:] for t in lst])
+        df1['ObsVeracity'] = df1['ObsVeracity'].apply(lambda lst: [(t[0], str(t[1]), t[2]) for t in lst])
+        #print(repr(df1["ObsVeracity"].iloc[0][0]))
+        #exit()
+        for hypothesis in hypotheses:
+            for j in range(0, self.num_agents):
+                hyp_dict_count[f"{j}{hypothesis}"] = (0, 0, 0)
+                for i in range(0, max_run):  # iterate over all runs
+                    #print(hypothesis)
+                    #print(df1[(df1["run"] == i)&(df1["id"]==j)]["ObsVeracity"])
+                    #print(hypothesis in df1[(df1["run"] == i)&(df1["id"]==j)]["ObsVeracity"].iloc[0])   # have to make it a list by indexing to iloc[0]
+                    if hypothesis not in df1[(df1["run"] == i)&(df1["id"]==j)]["ObsVeracity"].iloc[0]:
+                        #print(df1[(df1["run"] == i)&(df1["id"]==j)]["ObsStealEvents"].iloc[0])
+                        if hypothesis in df1[(df1["run"] == i)&(df1["id"]==j)]["ObsStealEvents"].iloc[0]:
+                            #print("hyp true: ", j, hypothesis)
+                            (true_count, false_count, tot) = hyp_dict_count[f"{j}{hypothesis}"]
+                            hyp_dict_count[f"{j}{hypothesis}"] = (true_count + 1, false_count, tot + 1)
+                        else:
+                            #print("hyp false: ", j, hypothesis)
+                            (true_count, false_count, tot) = hyp_dict_count[f"{j}{hypothesis}"]
+                            hyp_dict_count[f"{j}{hypothesis}"] = (true_count, false_count + 1, tot + 1)
+
+        outcomes = [["Hypothesis", "PTrue", "PFalse", "total"]]
+        for h in hyp_dict_count.keys():
+            (t, f, tot) = hyp_dict_count[h]
+            print(h, t, f, tot)
+            if tot > 0:
+                print(hypothesis, t / tot, f / tot, tot)
+                outcomes.append([h, t/tot, f/tot, tot])
+
+        with open(f"data/results/{evidence}.csv", 'w') as f:
+            writer = csv.writer(f)
+            writer.writerows(outcomes)
+
+    def plot_outcomes_histogram(self, fp, e):
+        df = pd.read_csv(fp)
+        plt.hist(df['PTrue'], bins=20, edgecolor='tab:blue')  # Adjust 'bins' as needed
+        plt.title('Histogram of Probability that Hypothesis Steals(X,Y) is True in GT')
+        plt.xlabel(f'Probability P(Hyp=True|{e})')
+        plt.xlim(0, 1)
+        plt.ylabel('Frequency of occurrence of this probability')
+        plt.show()
+        plt.savefig(f'figures/GTprobabilities{e}.png')
+
+
+    def plot_outcomes_histogram_allGT(self):
+        for fp in [f"data/results/noEvidence.csv",
+                   f"data/results/SEEN.csv",
+                   f"data/results/NOTSEEN.csv"]:
+
+            df = pd.read_csv(fp)
+            plt.hist(df['PTrue'], bins=20, alpha=0.4, label=f'{fp} Probabilities')  # Adjust 'bins' as needed
+
+        plt.title('Histogram of Probability that Hypothesis Steals(X,Y) is True in GT')
+        plt.xlabel(f'Probability P(Hyp=True|E)')
+        plt.xlim(0, 1)
+        plt.ylabel('Frequency of occurrence of this probability')
+        plt.legend()
+        #plt.show()
+        plt.savefig(f'figures/GTprobabilities.png')
+
+    def plot_outcomes_histogram_all(self):
+        for bn_type in ["", "t", "f", "hb", "h"]:
+            for fp in [f"data/results/{bn_type}noEvidence.csv",
+                       f"data/results/{bn_type}SEEN.csv",
+                       f"data/results/{bn_type}NOTSEEN.csv"
+                       ]:
+
+                df = pd.read_csv(fp)
+                plt.hist(df['PTrue'], bins=20, alpha=0.4, label=f'{fp} Probabilities')  # Adjust 'bins' as needed
+
+            plt.title(f'Histogram of Probability that Hypothesis Steals(X,Y) is True in {bn_type}')
+            plt.xlabel(f'Probability P(Hyp=True|E) in {bn_type}')
+            plt.xlim(0, 1)
+            plt.ylabel('Frequency of occurrence of this probability')
+            plt.legend()
+            #plt.show()
+            plt.savefig(f'figures/{bn_type}probabilities.png')
+            plt.clf()
+
+    def get_ground_truth(self):
+        df = pd.read_csv("data/datacollector.csv")
+        final_step = df["Step"].max()
+        df1 = df[(df["Step"] == final_step)]
+        df1 = df1.copy()
+        #pd.set_option("display.max_rows", None)
+        #print(df1[["run","id", "stealEvents"]])
+        df1["stealEvents"] = df1['stealEvents'].apply(ast.literal_eval)  # evaluate not as string but as list of tuples
+        df1['ObsStealEvents'] = df1['stealEvents'].apply(lambda lst: [t[1:] for t in lst])
+        df1['ObsStealEvents'] = df1['ObsStealEvents'].apply(lambda lst: [(t[0], str(t[1]), t[2]) for t in lst])
+
+        self.get_frequency_outcomes(df1, evidence={})   # writes to csv
+        fp = f"data/results/noEvidence.csv"
+        self.plot_outcomes_histogram(fp, e="{}")
+
+        self.get_frequency_outcomes_given_observation(df1, "SEEN")
+        fp = f"data/results/SEEN.csv"
+        self.plot_outcomes_histogram(fp, "SEEN")
+
+        self.get_frequency_outcomes_given_no_observation(df1, "NOTSEEN")
+        fp = f"data/results/NOTSEEN.csv"
+        self.plot_outcomes_histogram(fp, "NOTSEEN")
+
+        #self.plot_outcomes_histogram_allGT()
 
     def generate_hypotheses(self):
         # generate all possible combinations: <1,1,1> STOLE FROM 0, <111> STOLE FROM 2, <111> STOLE FROM 3, etc.
@@ -166,11 +354,45 @@ class Experiment():
 
         self.convert_networks_to_hugin(f"bns/{struct.lower()}/{struct.lower()}{hypotheses["testifies"]}")
 
+
+    def bn_inference(self):
+        for bn_type in ["f", "h", "hb", "t"]:
+            folder_path = f"bns/{bn_type}"
+            # Loop through all files and directories in the folder
+            for evidence in [{}, {"Testimony":"True"}, {"Testimony":"False"}]:
+                outcomes = [["Hypothesis", "PTrue", "PFalse", "total"]]
+                for filename in os.listdir(folder_path):
+                    if "hugin" not in filename:
+                        file_path = os.path.join(folder_path, filename)
+                        try:
+                            bn = gum.loadBN(file_path)
+                            ie = gum.LazyPropagation(bn)
+                            #print(ie.posterior("Hypothesis")[{"Hypothesis":"True"}])
+                            ie.setEvidence(evidence)
+                            pt = ie.posterior("Hypothesis")[{"Hypothesis":"True"}]
+                            pf = ie.posterior("Hypothesis")[{"Hypothesis":"False"}]
+                            outcomes.append([file_path, pt, pf])
+                        except Exception as e:
+                            print(f"{filename} {evidence} missing data, cannot calculate posterior")
+                if evidence == {}:
+                    ev = "noEvidence"
+                elif evidence == {"Testimony":"True"}:
+                    ev = "SEEN"
+                else:
+                    ev = "NOTSEEN"
+
+                with open(f"data/results/{bn_type}{ev}.csv", 'w') as f:
+                    writer = csv.writer(f)
+                    writer.writerows(outcomes)
+
+
+
+
     def permute_observations(self, variables, df1):
 
         (p, s, vic) = variables["stealhyp"]
 
-        NO = "None"#True #False #"None" # the value if the thing is not observed, False, or None
+        NO = "True" #"None"#True #False #"None" # the value if the thing is not observed, False, or None
 
         df1["vision_observation_permuted_tl"] = df1['vision_observation_permuted'].apply(
             ast.literal_eval)  # evaluate not as string but as list of tuples
@@ -208,7 +430,7 @@ class Experiment():
         (a, b, (c, d, e)) = v
         df1["originalTestifies"] = df1["testifies"]
 
-        NO = "None" #False # False or NT
+        NO = "False" #"None" #False # False or NT
 
         df1[variables["testifies"]] = df1['testifies'].apply(
             lambda x: NO if x == [] else NO if all(len(t) >= 4 and e != (t[3]) for t in x) else any(
@@ -346,9 +568,9 @@ class Experiment():
 
             df1['testimony_veracity'] = df1['testimony_veracity']
 
-            print(variables["stealhyp"])
-            print(df1["veracity"], df1["veracity"].apply(type))
-            print(df1[["testifies", "veracity", "testimony_veracity"]])
+            #print(variables["stealhyp"])
+            #print(df1["veracity"], df1["veracity"].apply(type))
+            #print(df1[["testifies", "veracity", "testimony_veracity"]])
 
 
             df1[["run", variables["stealhyp"], "testifies", "testimony_seen", "visionReliability",
@@ -406,8 +628,6 @@ class Experiment():
 
 
 
-
-
     def run_model(self):
         print(self.num_agents)
         model = ForestFire(30, 30, 0.00001, num_agents=self.num_agents)
@@ -424,7 +644,11 @@ def run_visual():
 def run_experiment():
     e = Experiment()
     #e.collect_data(e.num_runs)
-    e.preprocess_data()
+    #e.preprocess_data()
+    #e.get_ground_truth()
+    #e.bn_inference()
+    #e.plot_outcomes_histogram_allGT()
+    e.plot_outcomes_histogram_all()
 
 pd.set_option('display.max_columns', None)  # Show all columns
 pd.set_option('display.max_colwidth', None)  # Don't truncate content within columns
