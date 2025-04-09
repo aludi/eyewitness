@@ -23,10 +23,10 @@ node Reliable {
    ID = "Reliable";
 }
 
-node visionReliability {
+node vision_observationReliability {
    states =("False" );
-   label = "visionReliability";
-   ID = "visionReliability";
+   label = "vision_observationReliability";
+   ID = "vision_observationReliability";
 }
 
 node objectivityReliability {
@@ -42,7 +42,7 @@ node veracityReliability {
 }
 
 potential (Hypothesis) {
-   data = (  0.906991 0.0930087);
+   data = (  0.90383 0.0961699);
 }
 
 potential ( Testimony | Hypothesis   Reliable   ) {
@@ -51,12 +51,12 @@ potential ( Testimony | Hypothesis   Reliable   ) {
    ((   1)));   % Reliable=False   Hypothesis=True   
 }
 
-potential ( Reliable | visionReliability   objectivityReliability   veracityReliability   ) {
+potential ( Reliable | vision_observationReliability   objectivityReliability   veracityReliability   ) {
    data = 
-   ((((   1))));   % veracityReliability=False   objectivityReliability=False   visionReliability=False   
+   ((((   1))));   % veracityReliability=False   objectivityReliability=False   vision_observationReliability=False   
 }
 
-potential (visionReliability) {
+potential (vision_observationReliability) {
    data = (  1);
 }
 

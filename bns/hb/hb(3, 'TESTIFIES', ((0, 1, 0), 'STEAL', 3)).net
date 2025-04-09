@@ -24,7 +24,7 @@ node Reliable {
 }
 
 potential (Hypothesis) {
-   data = (  0.895755 0.104245);
+   data = (  0.902998 0.0970025);
 }
 
 potential ( Testimony | Hypothesis   Reliable   ) {
