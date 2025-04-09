@@ -1,13 +1,7 @@
-from copy import deepcopy
 import pandas as pd
-import numpy as np
 import pyAgrum as gum
 import pyAgrum.lib.image as gumimage
-import copy
-import re
-import os, shutil
-import time
-from itertools import product
+import os
 import csv
 
 def make_bn(df, struct, hypotheses):
@@ -84,7 +78,12 @@ def bn_inference(bn_types):
     for bn_type in bn_types:
         folder_path = f"bns/{bn_type.lower()}"
         # Loop through all files and directories in the folder
-        for evidence in [{}, {"Testimony":"True"}, {"Testimony":"False"}]:
+        if bn_type == "HB":
+            e_all_true = {"Testimony":"True", "Reliable":"True"}
+        else:
+            e_all_true = {"Testimony": "True", "vision_observationReliability": "True",
+                          "objectivityReliability": "True", "veracityReliability": "True"}
+        for evidence in [{}, {"Testimony":"True"}, {"Testimony":"False"}, e_all_true]:
             outcomes = [["Hypothesis", "PTrue", "PFalse", "total"]]
             for filename in os.listdir(folder_path):
                 if "hugin" not in filename:
@@ -102,8 +101,12 @@ def bn_inference(bn_types):
                 ev = "noEvidence"
             elif evidence == {"Testimony":"True"}:
                 ev = "SEEN"
-            else:
+            elif evidence == {"Testimony":"False"}:
                 ev = "NOTSEEN"
+            elif evidence == e_all_true:
+                ev = "SEENANDRELIABLE"
+            else:
+                print("this evidence set is not implemented yet")
 
             with open(f"data/results/{bn_type.lower()}{ev}.csv", 'w') as f:
                 writer = csv.writer(f)

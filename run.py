@@ -4,9 +4,7 @@ import pandas as pd
 import itertools
 import ast
 import numpy as np
-import cairo
 import csv
-import matplotlib.pyplot as plt
 import os
 from bn import make_bn, bn_inference
 from plotting import plot_outcomes_histogram_all
@@ -116,15 +114,15 @@ class Experiment():
             writer.writerows(outcomes)
 
     def match_tuple(self, row, hypothesis, colname):
+        '''
+        if no observations, the value returned is False
+        This means that there are no permutations/ hence the reliability is
+        high
+        '''
         observations = row[colname].apply(ast.literal_eval).iloc[0]
-        #print(observations)
-        #print(hypothesis)
         for ((a, b, c, d), e) in observations:
             if (b, c, d) == hypothesis:
-                if e == True:
-                    #print(observations)
-                    #print(hypothesis)
-                    return e
+                return e
         return False
 
     def get_frequency_outcomes_given_observation(self, df1, evidence):
@@ -146,11 +144,22 @@ class Experiment():
                             hyp_dict_count = self.count_posterior(hypothesis, df1, i, j, hyp_dict_count)
                     elif evidence == "SEENANDRELIABLE":
                         df2 = df1[(df1["run"] == i) & (df1["id"] == j)]
-                        if not self.match_tuple(df2, hypothesis, "vision_observation_permuted") and \
-                                not self.match_tuple(df2, hypothesis, "objectivity_permuted") and \
-                                not self.match_tuple(df2, hypothesis, "veracity_permuted"):
-                            hyp_dict_count = self.count_posterior(hypothesis, df1, i, j, hyp_dict_count)
+                        '''if (self.match_tuple(df2, hypothesis, "vision_observation_permuted") or \
+                                 self.match_tuple(df2, hypothesis, "objectivity_permuted") or \
+                                 self.match_tuple(df2, hypothesis, "veracity_permuted")):
+                            print("not reliable")
+                        print("testimony: ", hypothesis in df1[(df1["run"] == i)&(df1["id"]==j)]["ObsVeracity"].iloc[0])
+                        '''
+                        if not (self.match_tuple(df2, hypothesis, "vision_observation_permuted") or \
+                                 self.match_tuple(df2, hypothesis, "objectivity_permuted") or \
+                                 self.match_tuple(df2, hypothesis, "veracity_permuted")) and \
+                            hypothesis in df1[(df1["run"] == i)&(df1["id"]==j)]["ObsVeracity"].iloc[0]:
+                            '''print("reliable and seen?")
+                            print(hypothesis)
+                            print(df2["veracity_permuted"])
 
+                            print()'''
+                            hyp_dict_count = self.count_posterior(hypothesis, df2, i, j, hyp_dict_count)
 
                         #df1['ObsVeracity'] = df1['ObsVeracity'].apply(lambda lst: [t[0][1:][1:] for t in lst])
                         #if hypothesis in df1[(df1["run"] == i) & (df1["id"] == j)]["ObsVeracity"].iloc[0] and
@@ -405,14 +414,14 @@ def run_experiment():
     print("creating bns")
     #e.make_bns()
     print("calculating ground truth")
-    e.get_ground_truth()
+    #e.get_ground_truth()
     print("calculating posteriors")
-    e.bns_inference()
+    #e.bns_inference()
     print("plotting outcomes")
     plot_outcomes_histogram_all()
 
 
-#run_experiment()
-run_visual()
+run_experiment()
+#run_visual()
 
 
