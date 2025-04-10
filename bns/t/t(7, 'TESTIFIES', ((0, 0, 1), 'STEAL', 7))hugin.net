@@ -48,7 +48,7 @@ node veracityReliability {
 }
 
 potential (Hypothesis) {
-   data = (  0.926311 0.0736886);
+   data = (  0.913317 0.0866827);
 }
 
 potential ( Testimony | testimony_objectivity   veracityReliability   ) {

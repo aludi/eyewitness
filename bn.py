@@ -69,6 +69,7 @@ def create_BN_from_df(df, struct, hypotheses):
 
     learner.useNoPrior()
     bn = learner.learnBN()
+    print(bn)
     gum.saveBN(bn, f"bns/{struct.lower()}/{struct.lower()}{hypotheses["testifies"]}.net")
     # gumimage.exportInference(bn, f"bns/{struct.lower()}/{struct.lower()}{hypotheses["testifies"]}.png")
     convert_networks_to_hugin(f"bns/{struct.lower()}/{struct.lower()}{hypotheses["testifies"]}")
@@ -80,10 +81,25 @@ def bn_inference(bn_types):
         # Loop through all files and directories in the folder
         if bn_type == "HB":
             e_all_true = {"Testimony":"True", "Reliable":"True"}
+            e_unreliable1 = {"Testimony":"True", "Reliable":"False"}
+            e_unreliable2 = {"Testimony":"True", "Reliable":"False"}
+            e_unreliable3 = {"Testimony":"True", "Reliable":"False"}
+            e_unreliable4 = {"Testimony":"True", "Reliable":"False"}
+
         else:
             e_all_true = {"Testimony": "True", "vision_observationReliability": "True",
                           "objectivityReliability": "True", "veracityReliability": "True"}
-        for evidence in [{}, {"Testimony":"True"}, {"Testimony":"False"}, e_all_true]:
+            e_unreliable1 = {"Testimony": "True", "vision_observationReliability": "False",
+                             "objectivityReliability": "False", "veracityReliability": "False"}
+            e_unreliable2 = {"Testimony": "True", "vision_observationReliability": "False",
+                             "objectivityReliability": "True", "veracityReliability": "True"}
+            e_unreliable3 = {"Testimony": "True", "vision_observationReliability": "True",
+                             "objectivityReliability": "False", "veracityReliability": "True"}
+            e_unreliable4 = {"Testimony": "True", "vision_observationReliability": "True",
+                             "objectivityReliability": "True", "veracityReliability": "False"}
+        for evidence in [{}, {"Testimony":"True"}, {"Testimony":"False"}, e_all_true, e_unreliable1,
+                         e_unreliable2,e_unreliable3,e_unreliable4]:
+            print(evidence)
             outcomes = [["Hypothesis", "PTrue", "PFalse", "total"]]
             for filename in os.listdir(folder_path):
                 if "hugin" not in filename:
@@ -91,24 +107,22 @@ def bn_inference(bn_types):
                     try:
                         bn = gum.loadBN(file_path)
                         ie = gum.LazyPropagation(bn)
+
                         ie.setEvidence(evidence)
+
                         pt = ie.posterior("Hypothesis")[{"Hypothesis":"True"}]
                         pf = ie.posterior("Hypothesis")[{"Hypothesis":"False"}]
                         outcomes.append([file_path, pt, pf])
+
                     except Exception as e:
+                        print(e)
                         print(f"{filename} {evidence} missing data, cannot calculate posterior")
             if evidence == {}:
                 ev = "noEvidence"
-            elif evidence == {"Testimony":"True"}:
-                ev = "SEEN"
-            elif evidence == {"Testimony":"False"}:
-                ev = "NOTSEEN"
-            elif evidence == e_all_true:
-                ev = "SEENANDRELIABLE"
             else:
-                print("this evidence set is not implemented yet")
+                ev = evidence
 
-            with open(f"data/results/{bn_type.lower()}{ev}.csv", 'w') as f:
+            with open(f"data/results/{bn_type.lower()}/{ev}.csv", 'w') as f:
                 writer = csv.writer(f)
                 writer.writerows(outcomes)
 

@@ -12,7 +12,7 @@ from plotting import plot_outcomes_histogram_all
 class Experiment():
 
     def __init__(self):
-        self.num_runs = 1200
+        self.num_runs = 5000
         self.num_agents = 8
         self.simulation_time = 40
         self.simulation_data = None
@@ -66,10 +66,32 @@ class Experiment():
         df1['ObsStealEvents'] = df1['stealEvents'].apply(lambda lst: [t[1:] for t in lst])
         df1['ObsStealEvents'] = df1['ObsStealEvents'].apply(lambda lst: [(t[0], str(t[1]), t[2]) for t in lst])
 
-        '''self.get_frequency_outcomes(df1, evidence={})   # writes to csv
-        self.get_frequency_outcomes_given_observation(df1, "SEEN")
-        self.get_frequency_outcomes_given_observation(df1, "NOTSEEN")'''
-        self.get_frequency_outcomes_given_observation(df1, "SEENANDRELIABLE")
+        self.get_frequency_outcomes(df1, evidence={})   # writes to csv
+
+
+        evidence_list= [{"Testimony": "True"}, {"Testimony": "False"},
+                        {"Testimony": "True", "vision_observationReliability": "True",
+                      "objectivityReliability": "True", "veracityReliability": "True"},
+                        {"Testimony": "True", "vision_observationReliability": "False",
+                         "objectivityReliability": "False", "veracityReliability": "False"},
+                        {"Testimony": "True", "vision_observationReliability": "False",
+                         "objectivityReliability": "True", "veracityReliability": "True"},
+                        {"Testimony": "True", "vision_observationReliability": "True",
+                         "objectivityReliability": "False", "veracityReliability": "True"},
+                        {"Testimony": "True", "vision_observationReliability": "True",
+                         "objectivityReliability": "True", "veracityReliability": "False"}
+        ]
+
+        evidence_list = [{"Testimony": "True", "vision_observationReliability": "False",
+                         "objectivityReliability": "True", "veracityReliability": "True"},
+                        {"Testimony": "True", "vision_observationReliability": "True",
+                         "objectivityReliability": "False", "veracityReliability": "True"},
+                        {"Testimony": "True", "vision_observationReliability": "True",
+                         "objectivityReliability": "True", "veracityReliability": "False"}
+        ]
+        for evidence_set in evidence_list:
+            print(evidence_set)
+            self.get_frequency_outcomes_given_observation(df1, evidence_set)
 
 
     def get_frequency_outcomes(self, df1, evidence):
@@ -109,7 +131,7 @@ class Experiment():
                 #print(h, t / tot, f / tot, tot)
                 outcomes.append([h, t / tot, f / tot, tot])
 
-        with open(f"data/results/{evidence}.csv", 'w') as f:
+        with open(f"data/results/gt/{evidence}.csv", 'w') as f:
             writer = csv.writer(f)
             writer.writerows(outcomes)
 
@@ -132,24 +154,21 @@ class Experiment():
         df1['ObsVeracity'] = df1['veracity'].apply(ast.literal_eval)
         df1['ObsVeracity'] = df1['ObsVeracity'].apply(lambda lst: [t[1:] for t in lst])
         df1['ObsVeracity'] = df1['ObsVeracity'].apply(lambda lst: [(t[0], str(t[1]), t[2]) for t in lst])
+
         for hypothesis in hypotheses:
             for j in range(0, self.num_agents):
                 hyp_dict_count[f"{j}{hypothesis}"] = (0, 0, 0)
                 for i in range(0, max_run):  # iterate over all runs
-                    if evidence == "SEEN":
+                    if evidence == {"Testimony": "True"}:
                         if hypothesis in df1[(df1["run"] == i)&(df1["id"]==j)]["ObsVeracity"].iloc[0]:
                             hyp_dict_count = self.count_posterior(hypothesis, df1, i, j, hyp_dict_count)
-                    elif evidence == "NOTSEEN":
+                    elif evidence == {"Testimony": "False"}:
                         if hypothesis not in df1[(df1["run"] == i)&(df1["id"]==j)]["ObsVeracity"].iloc[0]:
                             hyp_dict_count = self.count_posterior(hypothesis, df1, i, j, hyp_dict_count)
-                    elif evidence == "SEENANDRELIABLE":
+                    elif evidence == {"Testimony": "True", "vision_observationReliability": "True",
+                          "objectivityReliability": "True", "veracityReliability": "True"}:
                         df2 = df1[(df1["run"] == i) & (df1["id"] == j)]
-                        '''if (self.match_tuple(df2, hypothesis, "vision_observation_permuted") or \
-                                 self.match_tuple(df2, hypothesis, "objectivity_permuted") or \
-                                 self.match_tuple(df2, hypothesis, "veracity_permuted")):
-                            print("not reliable")
-                        print("testimony: ", hypothesis in df1[(df1["run"] == i)&(df1["id"]==j)]["ObsVeracity"].iloc[0])
-                        '''
+
                         if not (self.match_tuple(df2, hypothesis, "vision_observation_permuted") or \
                                  self.match_tuple(df2, hypothesis, "objectivity_permuted") or \
                                  self.match_tuple(df2, hypothesis, "veracity_permuted")) and \
@@ -160,10 +179,55 @@ class Experiment():
 
                             print()'''
                             hyp_dict_count = self.count_posterior(hypothesis, df2, i, j, hyp_dict_count)
+                    elif evidence == {"Testimony": "True", "vision_observationReliability": "False",
+                          "objectivityReliability": "False", "veracityReliability": "False"}:
+                        df2 = df1[(df1["run"] == i) & (df1["id"] == j)]
 
-                        #df1['ObsVeracity'] = df1['ObsVeracity'].apply(lambda lst: [t[0][1:][1:] for t in lst])
-                        #if hypothesis in df1[(df1["run"] == i) & (df1["id"] == j)]["ObsVeracity"].iloc[0] and
-                        #    hypothesisexit()
+                        if (self.match_tuple(df2, hypothesis, "vision_observation_permuted") and \
+                                self.match_tuple(df2, hypothesis, "objectivity_permuted") and \
+                                self.match_tuple(df2, hypothesis, "veracity_permuted")) and \
+                                hypothesis in df1[(df1["run"] == i) & (df1["id"] == j)]["ObsVeracity"].iloc[0]:
+                                # vision unreliable and objectivity unreliable and veracity unreliable and testimony=True
+
+                            hyp_dict_count = self.count_posterior(hypothesis, df2, i, j, hyp_dict_count)
+
+                    elif evidence == {"Testimony": "True", "vision_observationReliability": "False",
+                          "objectivityReliability": "True", "veracityReliability": "True"}:
+                        df2 = df1[(df1["run"] == i) & (df1["id"] == j)]
+
+                        if (self.match_tuple(df2, hypothesis, "vision_observation_permuted") and \
+                                not(self.match_tuple(df2, hypothesis, "objectivity_permuted")) and \
+                                not(self.match_tuple(df2, hypothesis, "veracity_permuted"))) and \
+                                hypothesis in df1[(df1["run"] == i) & (df1["id"] == j)]["ObsVeracity"].iloc[0]:
+                                # vision unreliable and objectivity reliable and veracity reliable and testimony=True
+                            hyp_dict_count = self.count_posterior(hypothesis, df2, i, j, hyp_dict_count)
+
+                    elif evidence == {"Testimony": "True", "vision_observationReliability": "True",
+                          "objectivityReliability": "False", "veracityReliability": "True"}:
+                        df2 = df1[(df1["run"] == i) & (df1["id"] == j)]
+
+                        if (not(self.match_tuple(df2, hypothesis, "vision_observation_permuted")) and \
+                                self.match_tuple(df2, hypothesis, "objectivity_permuted") and \
+                                not(self.match_tuple(df2, hypothesis, "veracity_permuted"))) and \
+                                hypothesis in df1[(df1["run"] == i) & (df1["id"] == j)]["ObsVeracity"].iloc[0]:
+                                # vision reliable and objectivity unreliable and veracity reliable and testimony=True
+                            hyp_dict_count = self.count_posterior(hypothesis, df2, i, j, hyp_dict_count)
+
+                    elif evidence == {"Testimony": "True", "vision_observationReliability": "True",
+                          "objectivityReliability": "True", "veracityReliability": "False"}:
+                        df2 = df1[(df1["run"] == i) & (df1["id"] == j)]
+
+                        if (not(self.match_tuple(df2, hypothesis, "vision_observation_permuted")) and \
+                                not(self.match_tuple(df2, hypothesis, "objectivity_permuted")) and \
+                                self.match_tuple(df2, hypothesis, "veracity_permuted")) and \
+                                hypothesis in df1[(df1["run"] == i) & (df1["id"] == j)]["ObsVeracity"].iloc[0]:
+                                # vision reliable and objectivity reliable and veracity unreliable and testimony=True
+                            hyp_dict_count = self.count_posterior(hypothesis, df2, i, j, hyp_dict_count)
+                    else:
+                        print("evidence not implemented!")
+                        exit()
+
+
         self.count_freq_outcomes(hyp_dict_count, evidence)
 
 

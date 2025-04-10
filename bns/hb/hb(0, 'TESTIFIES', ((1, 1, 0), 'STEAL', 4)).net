@@ -24,19 +24,19 @@ node Reliable {
 }
 
 potential (Hypothesis) {
-   data = (  0.912157 0.0878435);
+   data = (  0.90192 0.0980804);
 }
 
 potential ( Testimony | Hypothesis   Reliable   ) {
    data = 
-   (((   0.985864   0.0141356)   % Reliable=False   Hypothesis=False   
-   (   0.998701   0.0012987))   % Reliable=True   Hypothesis=False   
-   ((   0.949231   0.0507692)   % Reliable=False   Hypothesis=True   
-   (   0.00515464   0.994845)));   % Reliable=True   Hypothesis=True   
+   (((   0.991502   0.00849816)   % Reliable=False   Hypothesis=False   
+   (   0.999669   0.000331345))   % Reliable=True   Hypothesis=False   
+   ((   0.943402   0.0565982)   % Reliable=False   Hypothesis=True   
+   (   0.00194553   0.998054)));   % Reliable=True   Hypothesis=True   
 }
 
 potential (Reliable) {
-   data = (  0.899667 0.100333);
+   data = (  0.911718 0.0882823);
 }
 
 
