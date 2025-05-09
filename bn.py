@@ -71,10 +71,10 @@ def create_BN_from_df(df, struct, hypotheses):
     learner.useNoPrior()
     bn = learner.learnBN()
     print(bn)
-    if type(hypotheses) == dict:
-        gum.saveBN(bn, f"bns/{struct.lower()}/{struct.lower()}{hypotheses["testifies"]}.net")
+    if hypotheses != "collective":
+        gum.saveBN(bn, f"bns/{struct.lower()}/{struct.lower()}{hypotheses}.net")
         # gumimage.exportInference(bn, f"bns/{struct.lower()}/{struct.lower()}{hypotheses["testifies"]}.png")
-        convert_networks_to_hugin(f"bns/{struct.lower()}/{struct.lower()}{hypotheses["testifies"]}")
+        convert_networks_to_hugin(f"bns/{struct.lower()}/{struct.lower()}{hypotheses}")
     else: # collective bn
         gum.saveBN(bn, f"bns/collective/{struct.lower()}.net")
         convert_networks_to_hugin(f"bns/collective/{struct.lower()}")
@@ -135,7 +135,7 @@ def bn_inference_collective(bn_types):
         wr.writerows(outcomes)
 
 
-def bn_inference(bn_types):
+def bn_inference(bn_types, hypothesis):
     for bn_type in bn_types:
         folder_path = f"bns/{bn_type.lower()}"
         # Loop through all files and directories in the folder
@@ -144,24 +144,24 @@ def bn_inference(bn_types):
             #print(evidence)
             outcomes = [["Hypothesis", "PTrue", "PFalse", "total"]]
             inf_problem = [["Hypothesis"]]
-            for filename in os.listdir(folder_path):
-                if "hugin" not in filename:
-                    file_path = os.path.join(folder_path, filename)
-                    try:
-                        bn = gum.loadBN(file_path)
-                        ie = gum.LazyPropagation(bn)
+            filename = f"{bn_type.lower()}{hypothesis}"
+            file_path = os.path.join(folder_path, filename)
+            try:
+                bn = gum.loadBN(file_path)
+                ie = gum.LazyPropagation(bn)
 
-                        ie.setEvidence(evidence)
+                ie.setEvidence(evidence)
 
-                        pt = ie.posterior("Hypothesis")[{"Hypothesis":"True"}]
-                        pf = ie.posterior("Hypothesis")[{"Hypothesis":"False"}]
-                        outcomes.append([file_path, pt, pf])
+                pt = ie.posterior("Hypothesis")[{"Hypothesis": "True"}]
+                pf = ie.posterior("Hypothesis")[{"Hypothesis": "False"}]
+                outcomes.append([file_path, pt, pf])
 
-                    except Exception as e:
-                        print(e)
-                        print(f"{filename} {evidence} missing data, cannot calculate posterior")
-                        inf_problem.append([file_path])     # things that are not observed in the dataset have a probability of 0
-                        outcomes.append([file_path, 0, 1])
+            except Exception as e:
+                print(e)
+                print(f"{filename} {evidence} missing data, cannot calculate posterior")
+                inf_problem.append([file_path])  # things that are not observed in the dataset have a probability of 0
+                outcomes.append([file_path, 0, 1])
+
             ev = evidence
 
             with open(f"data/results/{bn_type.lower()}/{ev}.csv", 'w') as f:
@@ -174,13 +174,14 @@ def bn_inference(bn_types):
 
             df = pd.read_csv(f"data/results/{bn_type.lower()}/{ev}.csv")
             # Apply the extraction
+            '''
             df["sort_key"] = df["Hypothesis"].apply(extract_sort_key)
 
             # Sort by the composite key
             df= df.sort_values("sort_key").drop(columns="sort_key")
             print(df["Hypothesis"])
             #print(df["sort_key"])
-            df.to_csv(f"data/results/{bn_type.lower()}/{ev}.csv")
+            df.to_csv(f"data/results/{bn_type.lower()}/{ev}.csv")'''
 
 def extract_sort_key(hypo):
     match = re.search(r"\((\d+), 'TESTIFIES', \(\((\d), (\d), (\d)\), 'STEAL', (\d+)\)\)", hypo)

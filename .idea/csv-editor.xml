@@ -108,6 +108,62 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/data/bndata/f/f1T(1, 0, 0)S1.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/f/f1T(1, 0, 0)S2.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/f/f1T(1, 1, 0)S3.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/f/f1T(1, 1, 0)S4.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/f/f1T(1, 1, 0)S6.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/f/f2T(0, 0, 1)S6.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/f/f2T(0, 0, 1)S7.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/bndata/f/f2T(0, 1, 0)S0.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/data/bndata/h/(0, 'TESTIFIES', ((0, 0, 0), 'STEAL', 1)).csv">
           <value>
             <Attribute>
@@ -248,6 +304,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/data/combinedDFs/f.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/combinedDFs/hb.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/data/datacollector.csv">
           <value>
             <Attribute>
@@ -340,6 +410,13 @@
           </value>
         </entry>
         <entry key="/data/out/problem/tPROBLEM{'Testimony': 'True', 'vision_observationReliability': 'False', 'objectivityReliability': 'True', 'veracityReliability': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/collective/-gt.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

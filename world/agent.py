@@ -184,7 +184,8 @@ class Ranger(mesa.Agent):
                 if random.random() < 0.3:
                     c = random.choice([0, 1])
                     vis_perturb = True
-
+            if (a, b, c) == profile:
+                vis_perturb = False
         return (a, b, c), vis_perturb
 
 
@@ -210,6 +211,9 @@ class Ranger(mesa.Agent):
                     c = random.choice([0, 1])
                     obj_perturb = True
 
+            if (a, b, c) == observed_profile:
+                obj_perturb = False
+
         return (a, b, c), obj_perturb
 
     def veracity_profile_permutation(self, objectivity_profile):
@@ -230,6 +234,8 @@ class Ranger(mesa.Agent):
                 if random.random() < 0.9:
                     c = random.choice([0, 1])
                     vera_perturb = True
+            if (a, b, c) == objectivity_profile:
+                vera_perturb = False
         return (a, b, c), vera_perturb
 
     def permutation_to_reliability(self, tf):

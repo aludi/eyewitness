@@ -13,7 +13,7 @@ from plotting import plot
 class Experiment():
 
     def __init__(self):
-        self.num_runs = 1000
+        self.num_runs = 5000
         self.num_agents = 8
         self.simulation_time = 40
         self.simulation_data = None
@@ -25,6 +25,27 @@ class Experiment():
     COLLECTING THE DATA BY RUNNING THE MODEL. CONTAINS FUNCTIONS COLLECT_DATA AND RUN_MODEL.
     WRITES SIMULATION DATA TO DATA/DATACOLLECTOR
     '''
+
+    def collect_data(self, runs):
+        df_list = []
+        for i in range(0, runs):
+            print("runs", i)
+            model = self.run_model()
+            self.final_model = model
+            df = self.create_dataframe(model)
+            df["run"] = i
+            df_list.append(df)
+        df = pd.concat(df_list)
+        self.simulation_data = df
+        df.to_csv("data/datacollector.csv", index=True)
+        print(df.shape)
+
+    def run_model(self):
+        #print(self.num_agents)
+        model = ForestFire(30, 30, 0.00001, num_agents=self.num_agents)
+        for i in range(0, self.simulation_time+1):
+            model.step()
+        return model
 
     def create_dataframe(self, model):
         dict = model.reporters
@@ -50,28 +71,6 @@ class Experiment():
         return merged_df
 
 
-    def collect_data(self, runs):
-        df_list = []
-        for i in range(0, runs):
-            print("runs", i)
-            model = self.run_model()
-            self.final_model = model
-            df = self.create_dataframe(model)
-            df["run"] = i
-            df_list.append(df)
-        df = pd.concat(df_list)
-        self.simulation_data = df
-        df.to_csv("data/datacollector.csv", index=True)
-        print(df.shape)
-
-    def run_model(self):
-        #print(self.num_agents)
-        model = ForestFire(30, 30, 0.00001, num_agents=self.num_agents)
-        for i in range(0, self.simulation_time+1):
-            model.step()
-        return model
-
-
     ''' CALCULATING GROUND TRUTH FREQUENCIES
     HERE WE CALCULATE THE GROUND TRUTH FREQUENIES.
     - GET_GROUND_TRUTH : BOOKKEEPING
@@ -84,7 +83,7 @@ class Experiment():
         # get posteriors with evidence setting in ground truth
         # prepare data for bayesian networks
         # in both individual and collective setting
-        # i just need two functions that I can call for the full or the subesetted data.
+
         df = pd.read_csv("data/datacollector.csv")
 
         self.calculate_joint(df)
@@ -141,29 +140,33 @@ class Experiment():
 
 
     def prepare_bn_data(self, df, collective):
+        df1 = df.copy()
 
+        hyp_testim = collective
 
         for bn in self.bn_types:
-            if collective == "collective":
-                hyp = ""
-                collective="combinedDFs"
-            else:
-                hyp = collective
+
+            if collective != "collective" and collective != "combinedDFs":
+                hyp = hyp_testim
                 collective = f"bndata/{bn.lower()}"
+            else:
+                hyp = ""
+                collective = "combinedDFs"
 
-            df["Hypothesis"] = df["vHyp"]
-            df["Testimony"] = df["vTestimony"]
-            df["vision_observationReliability"] = df["vreliability_vision"]
-            df["objectivityReliability"] = df["vreliability_objective"]
-            df["veracityReliability"] = df["vreliability_veracity"]
 
-            df["testimony_seen"] = df["vseen_stealing"]
-            df["testimony_objectivity"] = df["vobjective_interpretation"]
-            df["testimony_veracity"] = df["vveracity"]
+            df1["Hypothesis"] = df["vHyp"]
+            df1["Testimony"] = df["vTestimony"]
+            df1["vision_observationReliability"] = df["vreliability_vision"]
+            df1["objectivityReliability"] = df["vreliability_objective"]
+            df1["veracityReliability"] = df["vreliability_veracity"]
+
+            df1["testimony_seen"] = df["vseen_stealing"]
+            df1["testimony_objectivity"] = df["vobjective_interpretation"]
+            df1["testimony_veracity"] = df["vveracity"]
 
 
             if bn == "HB" or bn == "F":
-                df["Reliable"] = df[["vreliability_vision","vreliability_objective", "vreliability_veracity"]].min(axis=1)
+                df1["Reliable"] = df[["vreliability_vision","vreliability_objective", "vreliability_veracity"]].min(axis=1)
                 if bn == "HB":
                     vars = ["Hypothesis", "Testimony", "Reliable"]
                 elif bn == "F":
@@ -179,142 +182,9 @@ class Experiment():
                 "testimony_seen", "testimony_objectivity", "testimony_veracity",
                 "vision_observationReliability", "objectivityReliability", "veracityReliability"]
 
-            df[vars].to_csv(f"data/{collective}/{bn}{hyp}.csv", 'w')
-
-    def get_frequency_outcomes(self, df1, evidence):
-        hyp_dict_count = {}
-        hypotheses = self.generate_hypotheses()
-        max_run= df1["run"].max()
-        for hypothesis in hypotheses:
-            hyp_dict_count[hypothesis] = (0, 0, 0)
-            for i in range(0, max_run):  # iterate over all runs
-                if hypothesis in df1[df1["run"] == i]["ObsStealEvents"].iloc[0]:
-                    #print("hyp true: ", hypothesis)
-                    (true_count, false_count, tot) = hyp_dict_count[hypothesis]
-                    hyp_dict_count[hypothesis] = (true_count + 1, false_count, tot + 1)
-                else:
-                    #print("hyp false: ", hypothesis)
-                    (true_count, false_count, tot) = hyp_dict_count[hypothesis]
-                    hyp_dict_count[hypothesis] = (true_count, false_count + 1, tot + 1)
-        self.count_freq_outcomes(hyp_dict_count, evidence)
-
-    def count_posterior(self, hypothesis, df1, i, j, hyp_dict_count):
-        if hypothesis in df1[(df1["run"] == i) & (df1["id"] == j)]["ObsStealEvents"].iloc[0]:
-            # print("hyp true: ", j, hypothesis)
-            (true_count, false_count, tot) = hyp_dict_count[f"{j}{hypothesis}"]
-            hyp_dict_count[f"{j}{hypothesis}"] = (true_count + 1, false_count, tot + 1)
-        else:
-            # print("hyp false: ", j, hypothesis)
-            (true_count, false_count, tot) = hyp_dict_count[f"{j}{hypothesis}"]
-            hyp_dict_count[f"{j}{hypothesis}"] = (true_count, false_count + 1, tot + 1)
-        return hyp_dict_count
-
-    def count_freq_outcomes(self, hyp_dict_count, evidence):
-        outcomes = [["Hypothesis", "PTrue", "PFalse", "total"]]
-        for h in hyp_dict_count.keys():
-            (t, f, tot) = hyp_dict_count[h]
-            #print(h, t, f, tot)
-            if tot > 0:
-                #print(h, t / tot, f / tot, tot)
-                outcomes.append([h, t / tot, f / tot, tot])
-
-        with open(f"data/results/gt/{evidence}.csv", 'w') as f:
-            writer = csv.writer(f)
-            writer.writerows(outcomes)
-
-    def match_tuple(self, row, hypothesis, colname):
-        '''
-        if no observations, the value returned is False
-        This means that there are no permutations/ hence the reliability is
-        high
-        '''
-        observations = row[colname].apply(ast.literal_eval).iloc[0]
-        for ((a, b, c, d), e) in observations:
-            if (b, c, d) == hypothesis:
-                return e
-        return False
-
-    def get_frequency_outcomes_given_observation(self, df1, evidence):
-        hyp_dict_count = {}
-        hypotheses = self.generate_hypotheses()
-        max_run= df1["run"].max()
-        df1['ObsVeracity'] = df1['veracity'].apply(ast.literal_eval)
-        df1['ObsVeracity'] = df1['ObsVeracity'].apply(lambda lst: [t[1:] for t in lst])
-        df1['ObsVeracity'] = df1['ObsVeracity'].apply(lambda lst: [(t[0], str(t[1]), t[2]) for t in lst])
-
-        for hypothesis in hypotheses:
-            for j in range(0, self.num_agents):
-                hyp_dict_count[f"{j}{hypothesis}"] = (0, 0, 0)
-                for i in range(0, max_run):  # iterate over all runs
-                    if evidence == {"Testimony": "True"}:
-                        if hypothesis in df1[(df1["run"] == i)&(df1["id"]==j)]["ObsVeracity"].iloc[0]:
-                            hyp_dict_count = self.count_posterior(hypothesis, df1, i, j, hyp_dict_count)
-                    elif evidence == {"Testimony": "False"}:
-                        if hypothesis not in df1[(df1["run"] == i)&(df1["id"]==j)]["ObsVeracity"].iloc[0]:
-                            hyp_dict_count = self.count_posterior(hypothesis, df1, i, j, hyp_dict_count)
-                    elif evidence == {"Testimony": "True", "vision_observationReliability": "True",
-                          "objectivityReliability": "True", "veracityReliability": "True"}:
-                        df2 = df1[(df1["run"] == i) & (df1["id"] == j)]
-
-                        if not (self.match_tuple(df2, hypothesis, "vision_observation_permuted") or \
-                                 self.match_tuple(df2, hypothesis, "objectivity_permuted") or \
-                                 self.match_tuple(df2, hypothesis, "veracity_permuted")) and \
-                            hypothesis in df1[(df1["run"] == i)&(df1["id"]==j)]["ObsVeracity"].iloc[0]:
-                            '''print("reliable and seen?")
-                            print(hypothesis)
-                            print(df2["veracity_permuted"])
-                            print()'''
-                            hyp_dict_count = self.count_posterior(hypothesis, df2, i, j, hyp_dict_count)
-                    elif evidence == {"Testimony": "True", "vision_observationReliability": "False",
-                          "objectivityReliability": "False", "veracityReliability": "False"}:
-                        df2 = df1[(df1["run"] == i) & (df1["id"] == j)]
-
-                        if (self.match_tuple(df2, hypothesis, "vision_observation_permuted") and \
-                                self.match_tuple(df2, hypothesis, "objectivity_permuted") and \
-                                self.match_tuple(df2, hypothesis, "veracity_permuted")) and \
-                                hypothesis in df1[(df1["run"] == i) & (df1["id"] == j)]["ObsVeracity"].iloc[0]:
-                                # vision unreliable and objectivity unreliable and veracity unreliable and testimony=True
-
-                            hyp_dict_count = self.count_posterior(hypothesis, df2, i, j, hyp_dict_count)
-
-                    elif evidence == {"Testimony": "True", "vision_observationReliability": "False",
-                          "objectivityReliability": "True", "veracityReliability": "True"}:
-                        df2 = df1[(df1["run"] == i) & (df1["id"] == j)]
-
-                        if (self.match_tuple(df2, hypothesis, "vision_observation_permuted") and \
-                                not(self.match_tuple(df2, hypothesis, "objectivity_permuted")) and \
-                                not(self.match_tuple(df2, hypothesis, "veracity_permuted"))) and \
-                                hypothesis in df1[(df1["run"] == i) & (df1["id"] == j)]["ObsVeracity"].iloc[0]:
-                                # vision unreliable and objectivity reliable and veracity reliable and testimony=True
-                            hyp_dict_count = self.count_posterior(hypothesis, df2, i, j, hyp_dict_count)
-
-                    elif evidence == {"Testimony": "True", "vision_observationReliability": "True",
-                          "objectivityReliability": "False", "veracityReliability": "True"}:
-                        df2 = df1[(df1["run"] == i) & (df1["id"] == j)]
-
-                        if (not(self.match_tuple(df2, hypothesis, "vision_observation_permuted")) and \
-                                self.match_tuple(df2, hypothesis, "objectivity_permuted") and \
-                                not(self.match_tuple(df2, hypothesis, "veracity_permuted"))) and \
-                                hypothesis in df1[(df1["run"] == i) & (df1["id"] == j)]["ObsVeracity"].iloc[0]:
-                                # vision reliable and objectivity unreliable and veracity reliable and testimony=True
-                            hyp_dict_count = self.count_posterior(hypothesis, df2, i, j, hyp_dict_count)
-
-                    elif evidence == {"Testimony": "True", "vision_observationReliability": "True",
-                          "objectivityReliability": "True", "veracityReliability": "False"}:
-                        df2 = df1[(df1["run"] == i) & (df1["id"] == j)]
-
-                        if (not(self.match_tuple(df2, hypothesis, "vision_observation_permuted")) and \
-                                not(self.match_tuple(df2, hypothesis, "objectivity_permuted")) and \
-                                self.match_tuple(df2, hypothesis, "veracity_permuted")) and \
-                                hypothesis in df1[(df1["run"] == i) & (df1["id"] == j)]["ObsVeracity"].iloc[0]:
-                                # vision reliable and objectivity reliable and veracity unreliable and testimony=True
-                            hyp_dict_count = self.count_posterior(hypothesis, df2, i, j, hyp_dict_count)
-                    else:
-                        print("evidence not implemented!")
-                        exit()
-
-
-        self.count_freq_outcomes(hyp_dict_count, evidence)
+            print(collective, bn, hyp)
+            print(f"data/{collective}/{bn.lower()}{hyp}.csv")
+            df1[vars].to_csv(f"data/{collective}/{bn.lower()}{hyp}.csv", index=False)
 
 
     '''
@@ -324,37 +194,7 @@ class Experiment():
     DEFINING THE VALUES FOR ALL VARIABLES PER BN
     '''
 
-    def preprocess_data(self):
-        #self.preprocess_events()
-        self.make_big_dataframe()
 
-
-    def preprocess_events(self):
-        #df = self.simulation_data
-        df = pd.read_csv("data/datacollector.csv")
-        hypotheses = self.generate_hypotheses()
-        for hypothesis in hypotheses:
-            for witness_agent in range(0, self.num_agents):
-                for bn in self.bn_types:
-                    variables = self.generate_bn_variables(witness_agent, hypothesis, bn)
-                    self.get_events_from_df(witness_agent, df, variables, bn)
-
-    def make_big_dataframe(self):
-        for bn_type in self.bn_types:
-            bn_type = bn_type.lower()
-            folder_path = f"data/bndata/{bn_type}"
-            all_outcomes = sorted(os.listdir(folder_path))
-            df_col = []
-            for outcome in all_outcomes:
-                fp = f"{folder_path}/{outcome}"
-                df = pd.read_csv(fp)
-                df_col.append(df)
-                #print(bn_type, outcome)
-                #print(df)
-            df = pd.concat(df_col)
-            #print(df)
-            df.to_csv(f"data/combinedDFs/{bn_type}.csv", index=False)
-            #exit()
 
     def generate_hypotheses(self):
         # generate all possible combinations: <1,1,1> STOLE FROM 0, <111> STOLE FROM 2, <111> STOLE FROM 3, etc.
@@ -570,8 +410,38 @@ class Experiment():
     BAYESIAN NETWORK CONSTRUCTION AND INFERENCE
     '''
     def make_bns(self):
-        #self.individual_bn_creation()
+        self.individual_bn_creation()
         self.collective_bn()
+
+    def enumerate_hypotheses(self):
+        list_l = []
+        if self.final_model is not None:
+            profiles = self.final_model.prof
+        else:
+            prof_opportunities = list(itertools.product(range(2), repeat=3))
+            for i in range(2, 10):
+                if len(list(itertools.product(range(i), repeat=3))) >= self.num_agents:
+                    prof_opportunities = list(itertools.product(range(i), repeat=3))
+                    break
+            profiles = prof_opportunities
+
+        for j in range(0, self.num_agents):
+            for k in range(0, self.num_agents):
+                for prof in profiles:
+                    s = f"{k}T{prof}S{j}"
+                    list_l.append(s)
+        return list_l
+
+
+    def individual_bn_creation(self):
+        #hypotheses = self.generate_hypotheses()
+        hypotheses = self.enumerate_hypotheses()
+        for hypothesis in hypotheses:
+            for bn in self.bn_types:
+                variables = hypothesis
+                data = f"{bn.lower()}{hypothesis}"
+                df = pd.read_csv(f"data/bndata/{bn.lower()}/{data}.csv")
+                make_bn(df, bn, variables)
 
     def collective_bn(self):
         for bn in self.bn_types:
@@ -579,18 +449,10 @@ class Experiment():
             df = pd.read_csv(f"data/combinedDFs/{bn.lower()}.csv")
             make_bn(df, bn, variables)
 
-
-    def individual_bn_creation(self):
-        hypotheses = self.generate_hypotheses()
-        for hypothesis in hypotheses:
-            for witness_agent in range(0, self.num_agents):
-                for bn in self.bn_types:
-                    variables = self.generate_bn_variables(witness_agent, hypothesis, bn)
-                    df = pd.read_csv(f"data/bndata/{bn.lower()}/{variables["testifies"]}.csv")
-                    make_bn(df, bn, variables)
-
     def bns_inference(self):
-        #bn_inference(self.bn_types)
+        hypotheses = self.enumerate_hypotheses()
+        for hypothesis in hypotheses:
+            bn_inference(self.bn_types, hypothesis)
         bn_inference_collective(self.bn_types)
 
 
@@ -701,10 +563,6 @@ class Experiment():
                 GT_d = df_GT[["hyp", f"PTrueGT", f"PFalseGT"]]
                 GT_d["hyp"] = GT_d["hyp"].apply(lambda x: str(x))
 
-                #df_BN.to_csv( f"data/results/{bn_type.lower()}/{evidence}.csv")
-                #df_GT.to_csv( f"data/results/gt/{evidence}.csv")
-
-
                 results = pd.merge(BN_d, GT_d,on="hyp")
 
                 results["DPTrue"] = abs(results["PTrueGT"] - results[f"PTrue"])
@@ -736,20 +594,15 @@ def run_experiment():
 
     e = Experiment()
     print("running simulation")
-    #e.collect_data(e.num_runs)
+    e.collect_data(e.num_runs)
     print("preprocessing data")
     e.get_ground_truth()
-    '''
-    print("preprocessing data")
-    #e.preprocess_data()
     print("creating bns")
-    #e.make_bns()
-    print("calculating ground truth")
-    e.get_ground_truth()
+    e.make_bns()
     print("calculating posteriors")
-    #e.bns_inference()
+    e.bns_inference()
     print("calculating differences")
-    e.calculate_differences()
+    '''e.calculate_differences()
     print("plotting outcomes")
     plot()'''
 
