@@ -255,6 +255,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/data/jointprobs/gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/data/out/datacollector(0, 'TESTIFIES', ((0, 0, 0), 'STEAL', 1)).csv">
           <value>
             <Attribute>
@@ -451,6 +458,48 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/data/results/gt/0T(0, 0, 0)S0gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/gt/0T(0, 0, 0)S1gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/gt/0T(0, 0, 0)S2gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/gt/0T(0, 0, 1)S1gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/gt/7T(1, 1, 1)S4gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/gt/7T(1, 1, 1)S5gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/data/results/gt/{'Testimony': 'False'}.csv">
           <value>
             <Attribute>
@@ -564,6 +613,13 @@
           </value>
         </entry>
         <entry key="/data/results/hb/{}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/test.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

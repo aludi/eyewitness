@@ -35,7 +35,7 @@ class Ranger(mesa.Agent):
         self.observed_stealing_good = []
         self.observed_stealing_bad = []
         self.agents_steal_events = self.model.stealevents
-        self.max_radius = 20
+        self.max_radius = 15
         self.good_radius = 15#25
         self.angle = 100#120
 
@@ -170,7 +170,7 @@ class Ranger(mesa.Agent):
         (a,b,c) = profile
         vis_perturb = False
         #return (a, b, c), vis_perturb
-        if vision_state == "good":
+        if random.random() < 0.3:
             vis_perturb = False
         else:
             (a, b, c) = profile
@@ -186,6 +186,8 @@ class Ranger(mesa.Agent):
                     vis_perturb = True
 
         return (a, b, c), vis_perturb
+
+
 
 
     def objectivity_profile_permutation(self, observed_profile):
@@ -230,6 +232,12 @@ class Ranger(mesa.Agent):
                     vera_perturb = True
         return (a, b, c), vera_perturb
 
+    def permutation_to_reliability(self, tf):
+        if tf == True:
+            return False
+        elif tf == False:
+            return True
+
 
     def steal_attempt(self):
         self.attempted_stealing = True
@@ -244,39 +252,77 @@ class Ranger(mesa.Agent):
                 self.stolen_goods.append(self.target.valuable)
                 self.target.valuable = 0
                 self.model.stealevents.append((self.people_id, self.profile, "STEAL", self.target.people_id))
+                # we report that something has been stolen
+
+                #print(self.profile, "Steals from", self.target.people_id)
+                for k in range(0, self.model.ranger_num):
+                    self.model.reporters["vHyp"][self.people_id][self.target.people_id][k] = True
                 for agent in self.model.people_agents:
                     observed_profile = 0
                     if self.pos in agent.good_visible_cells:
                         agent.couldobserve.append((self.people_id, self.profile, "STEAL", self.target.people_id))
 
                         agent.observed_stealing_good.append((self.people_id, self.profile, "STEAL", self.target.people_id))
-                        print(f"{self.profile} stealing from {self.target.people_id} could be well observed by {agent.people_id}")
+                        #print(f"{self.profile} stealing from {self.target.people_id} could be well observed by {agent.people_id}")
                         observed_profile, vision_per = self.observed_profile_permutation(self.profile, "good")
+                        #print(f"    {agent.people_id} sees {observed_profile} steal, rel = {self.permutation_to_reliability(vision_per)}")
 
-                    elif self.pos in agent.bad_visible_cells:
-                        agent.couldobserve.append((self.people_id, self.profile, "STEAL", self.target.people_id))
-
-
-                        agent.observed_stealing_bad.append((self.people_id, self.profile, "STEAL", self.target.people_id))
-                        print(f"{self.profile} stealing from {self.target.people_id} could be bad observed by {agent.people_id}")
-                        observed_profile, vision_per =self.observed_profile_permutation(self.profile, "bad")
+                        observed_thief = self.model.prof.index(observed_profile)
+                        self.model.reporters["vseen_stealing"][observed_thief][self.target.people_id][agent.people_id] = True
+                        self.model.reporters["vreliability_vision"][self.people_id][self.target.people_id][agent.people_id] = self.permutation_to_reliability(vision_per)
+                        self.model.reporters["vreliability_vision"][observed_thief][self.target.people_id][agent.people_id] = self.permutation_to_reliability(vision_per)
 
                     if observed_profile != 0:
+
 
                         agent.vision_observation.append((self.people_id, observed_profile, "STEAL", self.target.people_id))
                         agent.vision_observation_permuted.append(((self.people_id, observed_profile, "STEAL", self.target.people_id), vision_per))
 
                         objectivity_profile, objectivity_per = self.objectivity_profile_permutation(observed_profile)
+                        #print(f"    {agent.people_id} believes {objectivity_profile} steals, rel = {self.permutation_to_reliability(objectivity_per)}")
+
+
+                        objective_thief = self.model.prof.index(objectivity_profile)
+                        self.model.reporters["vobjective_interpretation"][objective_thief][self.target.people_id][
+                            agent.people_id] = True
+
+                        self.model.reporters["vreliability_objective"][self.people_id][self.target.people_id][
+                            agent.people_id] = self.permutation_to_reliability(objectivity_per)
+
+                        self.model.reporters["vreliability_objective"][objective_thief][self.target.people_id][
+                            agent.people_id] = self.permutation_to_reliability(objectivity_per)
 
                         agent.objectivity.append((self.people_id, objectivity_profile, "STEAL", self.target.people_id))
                         agent.objectivity_permuted.append(
                             ((self.people_id, objectivity_profile, "STEAL", self.target.people_id), objectivity_per))
 
                         veracity_profile, veracity_per = self.veracity_profile_permutation(objectivity_profile)
+                        veracity_thief = self.model.prof.index(veracity_profile)
+
+                        #print(f"    {agent.people_id} wants to say {veracity_profile} steals, rel = {self.permutation_to_reliability(veracity_per)}")
+
+
+                        self.model.reporters["vveracity"][veracity_thief][self.target.people_id][
+                            agent.people_id] = True
+
+                        self.model.reporters["vreliability_veracity"][self.people_id][self.target.people_id][
+                            agent.people_id] = self.permutation_to_reliability(veracity_per)
+
+                        self.model.reporters["vreliability_veracity"][veracity_thief][self.target.people_id][
+                            agent.people_id] = self.permutation_to_reliability(veracity_per)
+
 
                         agent.veracity.append((self.people_id, veracity_profile, "STEAL", self.target.people_id))
                         agent.veracity_permuted.append(
                             ((self.people_id, veracity_profile, "STEAL", self.target.people_id), veracity_per))
+
+                        # if an agent does not lie and they saw something they will testify it
+                        #print(f"    {agent.people_id} testifies {veracity_profile} steals from {self.target.people_id}")
+
+                        self.model.reporters["vTestimony"][veracity_thief][self.target.people_id][
+                            agent.people_id] = True
+
+
 
 
 

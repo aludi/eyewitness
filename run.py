@@ -13,7 +13,7 @@ from plotting import plot
 class Experiment():
 
     def __init__(self):
-        self.num_runs = 100
+        self.num_runs = 1000
         self.num_agents = 8
         self.simulation_time = 40
         self.simulation_data = None
@@ -26,14 +26,37 @@ class Experiment():
     WRITES SIMULATION DATA TO DATA/DATACOLLECTOR
     '''
 
+    def create_dataframe(self, model):
+        dict = model.reporters
+        l_store = []
+        for key in dict.keys():
+            arr = dict[key]
+            key_mini_df = ["Testimony", key]
+            for i in range(arr.shape[0]):
+                for j in range(arr.shape[1]):
+                    for k in range(arr.shape[2]):
+                        l = [dict["Testimony"][i, j, k], dict[key][i, j, k]]
+                        key_mini_df.append(l)
+            columns = key_mini_df[0:2]
+            rows = key_mini_df[2:]
+            df = pd.DataFrame(rows, columns=columns)
+            if key not in ["Hyp", "Testimony"]:
+                df[columns[1]] = df[columns[1]].astype(bool)
+            l_store.append(df)
+        merged_df = l_store[0].set_index("Testimony")
+        for df in l_store[1:]:
+            merged_df = merged_df.join(df.set_index("Testimony"))
+        merged_df = merged_df.reset_index()
+        return merged_df
+
+
     def collect_data(self, runs):
         df_list = []
         for i in range(0, runs):
             print("runs", i)
             model = self.run_model()
             self.final_model = model
-            #print(model.relevant_data)
-            df = model.datacollector.get_agent_vars_dataframe()
+            df = self.create_dataframe(model)
             df["run"] = i
             df_list.append(df)
         df = pd.concat(df_list)
@@ -42,7 +65,7 @@ class Experiment():
         print(df.shape)
 
     def run_model(self):
-        print(self.num_agents)
+        #print(self.num_agents)
         model = ForestFire(30, 30, 0.00001, num_agents=self.num_agents)
         for i in range(0, self.simulation_time+1):
             model.step()
@@ -58,46 +81,105 @@ class Experiment():
     '''
 
     def get_ground_truth(self):
-        #self.get_individual_ground_truth()
-        self.get_ground_truth_collective()
-
-    def get_individual_ground_truth(self):
+        # get posteriors with evidence setting in ground truth
+        # prepare data for bayesian networks
+        # in both individual and collective setting
+        # i just need two functions that I can call for the full or the subesetted data.
         df = pd.read_csv("data/datacollector.csv")
-        final_step = df["Step"].max()
-        df1 = df[(df["Step"] == final_step)]
-        df1 = df1.copy()
 
-        df1["stealEvents"] = df1['stealEvents'].apply(ast.literal_eval)  # evaluate not as string but as list of tuples
-        df1['ObsStealEvents'] = df1['stealEvents'].apply(lambda lst: [t[1:] for t in lst])
-        df1['ObsStealEvents'] = df1['ObsStealEvents'].apply(lambda lst: [(t[0], str(t[1]), t[2]) for t in lst])
+        self.calculate_joint(df)
+        self.posterior_frequencies(df, "collective")
+        self.prepare_bn_data(df, "collective")
 
-        self.get_frequency_outcomes(df1, evidence={})   # writes to csv
+        hyp_tests = df["Testimony"].unique().tolist()
+        for hyp in hyp_tests:
+            subset = df[df["Testimony"] == hyp]  # length should be num of runs.
+            self.posterior_frequencies(subset, hyp)
+            self.prepare_bn_data(subset, hyp)
 
 
-        evidence_list= [{"Testimony": "True"}, {"Testimony": "False"},
-                        {"Testimony": "True", "vision_observationReliability": "True",
-                      "objectivityReliability": "True", "veracityReliability": "True"},
-                        {"Testimony": "True", "vision_observationReliability": "False",
-                         "objectivityReliability": "False", "veracityReliability": "False"},
-                        {"Testimony": "True", "vision_observationReliability": "False",
-                         "objectivityReliability": "True", "veracityReliability": "True"},
-                        {"Testimony": "True", "vision_observationReliability": "True",
-                         "objectivityReliability": "False", "veracityReliability": "True"},
-                        {"Testimony": "True", "vision_observationReliability": "True",
-                         "objectivityReliability": "True", "veracityReliability": "False"}
-        ]
+    def calculate_joint(self, df):
+        s = []
+        cols = ["vHyp", "vTestimony", "vseen_stealing", "vreliability_vision", "vobjective_interpretation",
+                "vreliability_objective", "vveracity", "vreliability_veracity"]
+        for col_name in cols:
+            s.append(df[col_name])
+        joint_counts = df.groupby(cols).size()
+        joint_probabilities = joint_counts / joint_counts.sum()
+        joint_probabilities_df = joint_probabilities.reset_index(name='probability')
+        joint_probabilities_df.to_csv("data/jointprobs/gt.csv")
 
-        '''evidence_list = [{"Testimony": "True", "vision_observationReliability": "False",
-                         "objectivityReliability": "True", "veracityReliability": "True"},
-                        {"Testimony": "True", "vision_observationReliability": "True",
-                         "objectivityReliability": "False", "veracityReliability": "True"},
-                        {"Testimony": "True", "vision_observationReliability": "True",
-                         "objectivityReliability": "True", "veracityReliability": "False"}
-        ]'''
-        for evidence_set in evidence_list:
-            print(evidence_set)
-            self.get_frequency_outcomes_given_observation(df1, evidence_set)
+    def posterior_frequencies(self, df, collective):
+        if collective == "collective":
+            hyp = ""
+        else:
+            hyp = collective
+            collective = "gt"
 
+        # we're not going over all cols, only the ones we could "observe" somehow??
+        cols = ["vTestimony", "vreliability_vision","vreliability_objective", "vreliability_veracity"]
+        values = [True, False, 'unspecified']
+        # Generate all combinations of True, False, and 'unspecified' for each column
+        combinations = list(itertools.product(values, repeat=len(cols)))
+        combinations_dict = []
+        for combo in combinations:
+            # Create a dictionary for each combination
+            d = {cols[i]: combo[i] for i in range(len(cols)) if combo[i] != 'unspecified'}
+            combinations_dict.append(d)
+
+        posteriors_list = [["Evidence", "FTrue", "FFalse"]]
+        for d in combinations_dict:
+            subset = df
+            for k in d.keys():
+                subset = subset[subset[k] == d[k]]
+            val_c = subset["vHyp"].value_counts(normalize=True)
+            posteriors_list.append([d, val_c.get(True, 0), val_c.get(False, 0)])
+
+        with open(f"data/results/{collective}/{hyp}-gt.csv", 'w') as f:
+            writer = csv.writer(f)
+            writer.writerows(posteriors_list)
+
+
+    def prepare_bn_data(self, df, collective):
+
+
+        for bn in self.bn_types:
+            if collective == "collective":
+                hyp = ""
+                collective="combinedDFs"
+            else:
+                hyp = collective
+                collective = f"bndata/{bn.lower()}"
+
+            df["Hypothesis"] = df["vHyp"]
+            df["Testimony"] = df["vTestimony"]
+            df["vision_observationReliability"] = df["vreliability_vision"]
+            df["objectivityReliability"] = df["vreliability_objective"]
+            df["veracityReliability"] = df["vreliability_veracity"]
+
+            df["testimony_seen"] = df["vseen_stealing"]
+            df["testimony_objectivity"] = df["vobjective_interpretation"]
+            df["testimony_veracity"] = df["vveracity"]
+
+
+            if bn == "HB" or bn == "F":
+                df["Reliable"] = df[["vreliability_vision","vreliability_objective", "vreliability_veracity"]].min(axis=1)
+                if bn == "HB":
+                    vars = ["Hypothesis", "Testimony", "Reliable"]
+                elif bn == "F":
+                    vars = ["Hypothesis", "Testimony", "Reliable","vision_observationReliability",
+                            "objectivityReliability", "veracityReliability"]
+            elif bn == "T":
+                vars = ["Hypothesis", "Testimony",
+                        "testimony_seen", "testimony_objectivity",
+                        "vision_observationReliability", "objectivityReliability", "veracityReliability"]
+
+            elif bn == "H":
+                vars = ["Hypothesis", "Testimony",
+                "testimony_seen", "testimony_objectivity", "testimony_veracity",
+                "vision_observationReliability", "objectivityReliability", "veracityReliability"]
+
+            df[vars].to_csv(f"data/{collective}/{bn}{hyp}.csv", 'w')
 
     def get_frequency_outcomes(self, df1, evidence):
         hyp_dict_count = {}
@@ -654,7 +736,9 @@ def run_experiment():
 
     e = Experiment()
     print("running simulation")
-    e.collect_data(e.num_runs)
+    #e.collect_data(e.num_runs)
+    print("preprocessing data")
+    e.get_ground_truth()
     '''
     print("preprocessing data")
     #e.preprocess_data()
