@@ -657,6 +657,7 @@ def run_visual():
     server.launch(open_browser=True)
 
 def run_experiment():
+
     e = Experiment()
     #print("running simulation")
     #e.collect_data(e.num_runs)

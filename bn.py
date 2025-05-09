@@ -136,13 +136,12 @@ def bn_inference_collective(bn_types):
 
 
 def bn_inference(bn_types):
-
     for bn_type in bn_types:
         folder_path = f"bns/{bn_type.lower()}"
         # Loop through all files and directories in the folder
         ev_list = get_evidence(bn_type)
         for evidence in ev_list:
-            print(evidence)
+            #print(evidence)
             outcomes = [["Hypothesis", "PTrue", "PFalse", "total"]]
             inf_problem = [["Hypothesis"]]
             for filename in os.listdir(folder_path):
