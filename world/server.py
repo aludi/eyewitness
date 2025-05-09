@@ -5,7 +5,10 @@ from world.agent import TreeCell, Ranger, Place
 from mesa.visualization.modules import TextElement
 
 COLORS = {"Fine": "#00AA00", "On Fire": "#880000", "Burned Out": "#000000",
-          "human":"#FFFF00", "thief":"#bc0011", "intent":"#f9ca8a", "attempt":"#fc9501",
+          "human": "white",#"#FFFF00",
+          "thief":"red",#"#bc0011",
+          "intent":"white",#"#f9ca8a",
+          "attempt":"white", #"#fc9501",
           "store": "#FFC0CB",
           "off":"#90EE90", "bad_on":"#89CFF0","good_on":"#0096FF"}
 
@@ -23,7 +26,7 @@ def forest_fire_portrayal(agent):
         s = str(agent.people_id) +str(agent.profile)
         shape = "circle"
         r = 1
-        if agent.stealing:
+        if agent.stealing or agent.attempted_stealing:
             color=COLORS["thief"]
 
         elif agent.attempted_stealing:
@@ -72,7 +75,7 @@ model_params = {
     "height": 50,
     "width": 50,
     "density": mesa.visualization.Slider("Tree density", 0.00001, 0.01, 1.0, 0.01),
-    "num_agents":10
+    "num_agents":0
 }
 
 # this instantiates the server, with the agent grid (canvas_element) and the text that describes what the agents are doing

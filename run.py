@@ -5,9 +5,10 @@ import itertools
 import ast
 import numpy as np
 import csv
+import re
 import os
-from bn import make_bn, bn_inference
-from plotting import plot_outcomes_histogram_all
+from bn import make_bn, bn_inference, bn_inference_collective
+from plotting import plot
 
 class Experiment():
 
@@ -57,6 +58,10 @@ class Experiment():
     '''
 
     def get_ground_truth(self):
+        #self.get_individual_ground_truth()
+        self.get_ground_truth_collective()
+
+    def get_individual_ground_truth(self):
         df = pd.read_csv("data/datacollector.csv")
         final_step = df["Step"].max()
         df1 = df[(df["Step"] == final_step)]
@@ -82,13 +87,13 @@ class Experiment():
                          "objectivityReliability": "True", "veracityReliability": "False"}
         ]
 
-        evidence_list = [{"Testimony": "True", "vision_observationReliability": "False",
+        '''evidence_list = [{"Testimony": "True", "vision_observationReliability": "False",
                          "objectivityReliability": "True", "veracityReliability": "True"},
                         {"Testimony": "True", "vision_observationReliability": "True",
                          "objectivityReliability": "False", "veracityReliability": "True"},
                         {"Testimony": "True", "vision_observationReliability": "True",
                          "objectivityReliability": "True", "veracityReliability": "False"}
-        ]
+        ]'''
         for evidence_set in evidence_list:
             print(evidence_set)
             self.get_frequency_outcomes_given_observation(df1, evidence_set)
@@ -176,7 +181,6 @@ class Experiment():
                             '''print("reliable and seen?")
                             print(hypothesis)
                             print(df2["veracity_permuted"])
-
                             print()'''
                             hyp_dict_count = self.count_posterior(hypothesis, df2, i, j, hyp_dict_count)
                     elif evidence == {"Testimony": "True", "vision_observationReliability": "False",
@@ -239,6 +243,11 @@ class Experiment():
     '''
 
     def preprocess_data(self):
+        #self.preprocess_events()
+        self.make_big_dataframe()
+
+
+    def preprocess_events(self):
         #df = self.simulation_data
         df = pd.read_csv("data/datacollector.csv")
         hypotheses = self.generate_hypotheses()
@@ -248,6 +257,22 @@ class Experiment():
                     variables = self.generate_bn_variables(witness_agent, hypothesis, bn)
                     self.get_events_from_df(witness_agent, df, variables, bn)
 
+    def make_big_dataframe(self):
+        for bn_type in self.bn_types:
+            bn_type = bn_type.lower()
+            folder_path = f"data/bndata/{bn_type}"
+            all_outcomes = sorted(os.listdir(folder_path))
+            df_col = []
+            for outcome in all_outcomes:
+                fp = f"{folder_path}/{outcome}"
+                df = pd.read_csv(fp)
+                df_col.append(df)
+                #print(bn_type, outcome)
+                #print(df)
+            df = pd.concat(df_col)
+            #print(df)
+            df.to_csv(f"data/combinedDFs/{bn_type}.csv", index=False)
+            #exit()
 
     def generate_hypotheses(self):
         # generate all possible combinations: <1,1,1> STOLE FROM 0, <111> STOLE FROM 2, <111> STOLE FROM 3, etc.
@@ -333,16 +358,19 @@ class Experiment():
                 exit()
 
         elif bn == "T":
+            #print(witness_agent, variables["stealhyp"])
+
             df1 = self.is_hyp_agent_in_obs_list(df1, variables, "vision_observation", "testimony_seen")
             df1 = self.is_hyp_agent_in_obs_list(df1, variables, "objectivity", "testimony_objectivity")
             df1 = self.is_hyp_agent_in_obs_list(df1, variables, "veracity", "testifies")
+
             df1 = self.determine_permutation_observations(variables, df1)
             df1["Testimony"] = df1["testifies"]
 
             df1[["Hypothesis", "Testimony",
                  "testimony_seen","testimony_objectivity",
                  "vision_observationReliability", "objectivityReliability", "veracityReliability"]].to_csv(
-                f"data/bndata/t/{variables["testifies"]}.csv",index=False)
+                f"data/bndata/t/CHECK{variables["testifies"]}.csv",index=False)
 
         elif bn == "H":
             df1 = self.is_hyp_agent_in_obs_list(df1, variables, "vision_observation", "testimony_seen")
@@ -386,11 +414,18 @@ class Experiment():
         df1[var_node_name] = df1[var_list_col].apply(
             ast.literal_eval)  # evaluate not as string but as list of tuples
         v = variables[var_node_name]
+        #print(df1[["run", "step", var_node_name]])
+        d1 = df1[df1["run"] == 434]
+        pd.set_option('display.max_colwidth', None)
+        #print(d1[[var_node_name, var_list_col]])
+        #exit()
         (a, b, (c, d, e)) = v
         df1[f"original{var_list_col}"] = df1[var_list_col]
         df1[var_node_name] = df1[var_node_name].apply(
             lambda x: any(len(t) >= 4 and (c, str(d), e) == (t[1], t[2], t[3]) for t in x)
         )
+        print(df1[var_node_name])
+        print(df1[var_node_name].value_counts())
         return df1
 
     def get_testimony(self, variables, df1):
@@ -453,6 +488,17 @@ class Experiment():
     BAYESIAN NETWORK CONSTRUCTION AND INFERENCE
     '''
     def make_bns(self):
+        #self.individual_bn_creation()
+        self.collective_bn()
+
+    def collective_bn(self):
+        for bn in self.bn_types:
+            variables = "collective"
+            df = pd.read_csv(f"data/combinedDFs/{bn.lower()}.csv")
+            make_bn(df, bn, variables)
+
+
+    def individual_bn_creation(self):
         hypotheses = self.generate_hypotheses()
         for hypothesis in hypotheses:
             for witness_agent in range(0, self.num_agents):
@@ -462,7 +508,148 @@ class Experiment():
                     make_bn(df, bn, variables)
 
     def bns_inference(self):
-        bn_inference(self.bn_types)
+        #bn_inference(self.bn_types)
+        bn_inference_collective(self.bn_types)
+
+
+    def calculate_differences(self):
+        #self.calculate_differences_individual()
+        self.calculate_differences_collective()
+        pass
+
+    def calculate_differences_collective(self):
+        gt_df = f"data/results/collective/gt.csv"
+        bn_df = f"data/results/collective/outcomes.csv"
+        gt_df = pd.read_csv(gt_df)
+        bn_df = pd.read_csv(bn_df)
+        gt_df["Evidence"] = gt_df["ev"]
+        gt_df["FTrue"] = gt_df["FStealT"]
+        gt_df["FFalse"] = gt_df["FStealF"]
+        g_df = gt_df[["Evidence", "FTrue", "FFalse"]]
+        pd.set_option('display.max_columns', None)
+        merged = pd.merge(bn_df, g_df, on='Evidence')
+        merged["DT"] = abs(merged["FTrue"] -merged["PTrue"])
+        merged["DF"] = abs(merged["FFalse"] -merged["PFalse"])
+        merged.to_csv(f"data/results/collective/difference.csv")
+
+
+
+    def get_ground_truth_collective(self):
+        folder_path = f"data/results/gt"
+        all_outcomes = sorted(os.listdir(folder_path))
+        collected_dfs = []
+        for file in all_outcomes:
+            fp = f"{folder_path}/{file}"
+            df = pd.read_csv(fp)
+            df["FreqStealTrue"] = df["PTrue"]*df["total"]
+            df["FreqStealFalse"] = df["PFalse"]*df["total"]
+            ev = file.split(".csv")[0]
+            df1 = df[["FreqStealTrue","FreqStealFalse"]]
+            #print(ev, "\n", df1.sum())
+            df1 = pd.DataFrame([df1.sum()])
+            df1["ev"] = ev
+            df1["sumEvents"] = df1["FreqStealTrue"] + df1["FreqStealFalse"]
+            df1["FStealT"] = df1["FreqStealTrue"]/df1["sumEvents"]
+            df1["FStealF"] = df1["FreqStealFalse"]/df1["sumEvents"]
+            #print(df1)
+            df2 = df1[["ev", "FStealT", "FStealF"]]
+            print(df2)
+            #print("\n\n\n\n")
+            collected_dfs.append(df2)
+
+        df = pd.concat(collected_dfs)
+        print(df)
+        df.to_csv(f"data/results/collective/gt.csv")
+
+
+
+    def calculate_differences_individual(self):
+        df_col = []
+        for bn_type in self.bn_types:
+            #folder_path = f"bns/{bn_type.lower()}"
+            # Loop through all files and directories in the folder
+            if bn_type == "HB":
+                e_all_true = {"Testimony": "True", "Reliable": "True"}
+                e_unreliable1 = {"Testimony": "True", "Reliable": "False"}
+                e_unreliable2 = {"Testimony": "True", "Reliable": "False"}
+                e_unreliable3 = {"Testimony": "True", "Reliable": "False"}
+                e_unreliable4 = {"Testimony": "True", "Reliable": "False"}
+
+            else:
+                e_all_true = {"Testimony": "True", "vision_observationReliability": "True",
+                              "objectivityReliability": "True", "veracityReliability": "True"}
+                e_unreliable1 = {"Testimony": "True", "vision_observationReliability": "False",
+                                 "objectivityReliability": "False", "veracityReliability": "False"}
+                e_unreliable2 = {"Testimony": "True", "vision_observationReliability": "False",
+                                 "objectivityReliability": "True", "veracityReliability": "True"}
+                e_unreliable3 = {"Testimony": "True", "vision_observationReliability": "True",
+                                 "objectivityReliability": "False", "veracityReliability": "True"}
+                e_unreliable4 = {"Testimony": "True", "vision_observationReliability": "True",
+                                 "objectivityReliability": "True", "veracityReliability": "False"}
+            for evidence in [{}, {"Testimony": "True"}, {"Testimony": "False"}, e_all_true, e_unreliable1,
+                             e_unreliable2, e_unreliable3, e_unreliable4]:
+                #print(evidence)
+                folder_path = f"data/results/{bn_type.lower()}/{evidence}.csv"
+                #print(folder_path)
+
+                df_BN = pd.read_csv(folder_path)
+                if bn_type == "HB":
+                    if evidence == e_all_true:
+                        e = {"Testimony": "True", "vision_observationReliability": "True",
+                                      "objectivityReliability": "True", "veracityReliability": "True"}
+                    else:
+                        e = {"Testimony": "True", "vision_observationReliability": "True",
+                             "objectivityReliability": "True", "veracityReliability": "False"}
+                    df_GT = pd.read_csv(f"data/results/gt/{e}.csv")
+                else:
+                    df_GT = pd.read_csv(f"data/results/gt/{evidence}.csv")
+
+                df_BN['hyp'] = df_BN['Hypothesis'].str.findall(r'(\d+)')
+                df_GT['hyp'] = df_GT['Hypothesis'].str.findall(r'(\d+)')
+
+
+                df_GT[f"PTrueGT"] = df_BN["PTrue"]
+                df_GT[f"PFalseGT"] = df_BN["PFalse"]
+
+                BN_d = df_BN[["hyp", f"PTrue", f"PFalse"]]
+                BN_d = BN_d[BN_d['hyp'].apply(lambda x: x != [])]
+                BN_d["hyp"] = BN_d["hyp"].apply(lambda x: str(x))
+
+
+                GT_d = df_GT[["hyp", f"PTrueGT", f"PFalseGT"]]
+                GT_d["hyp"] = GT_d["hyp"].apply(lambda x: str(x))
+
+                #df_BN.to_csv( f"data/results/{bn_type.lower()}/{evidence}.csv")
+                #df_GT.to_csv( f"data/results/gt/{evidence}.csv")
+
+
+                results = pd.merge(BN_d, GT_d,on="hyp")
+
+                results["DPTrue"] = abs(results["PTrueGT"] - results[f"PTrue"])
+                results["DPFalse"] = abs(results["PFalseGT"] - results[f"PFalse"])
+                results["evidence"] = str(evidence)
+                results["bn"] = bn_type
+
+                print(results["evidence"])
+
+                df_col.append(results)
+
+
+
+                #print(bn_type, evidence)
+                #print(results)
+
+                results.to_csv(f"data/results/difference/D-{bn_type}-{evidence}.csv")
+
+
+
+
+                #print(df_BN)
+                #print(df_GT)
+                # merge on column hyp. rename the other columns
+            all_results = pd.concat(df_col)
+            all_results.to_csv("data/results/difference/allresults.csv")
+
 
 
 def run_visual():
@@ -471,18 +658,20 @@ def run_visual():
 
 def run_experiment():
     e = Experiment()
-    print("running simulation")
+    #print("running simulation")
     #e.collect_data(e.num_runs)
     print("preprocessing data")
     #e.preprocess_data()
     print("creating bns")
     #e.make_bns()
     print("calculating ground truth")
-    #e.get_ground_truth()
+    e.get_ground_truth()
     print("calculating posteriors")
     #e.bns_inference()
+    print("calculating differences")
+    e.calculate_differences()
     print("plotting outcomes")
-    plot_outcomes_histogram_all()
+    plot()
 
 
 run_experiment()
