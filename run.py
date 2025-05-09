@@ -13,7 +13,7 @@ from plotting import plot
 class Experiment():
 
     def __init__(self):
-        self.num_runs = 5000
+        self.num_runs = 100
         self.num_agents = 8
         self.simulation_time = 40
         self.simulation_data = None
@@ -634,15 +634,9 @@ class Experiment():
 
                 df_col.append(results)
 
-
-
                 #print(bn_type, evidence)
                 #print(results)
-
                 results.to_csv(f"data/results/difference/D-{bn_type}-{evidence}.csv")
-
-
-
 
                 #print(df_BN)
                 #print(df_GT)
@@ -659,8 +653,9 @@ def run_visual():
 def run_experiment():
 
     e = Experiment()
-    #print("running simulation")
-    #e.collect_data(e.num_runs)
+    print("running simulation")
+    e.collect_data(e.num_runs)
+    '''
     print("preprocessing data")
     #e.preprocess_data()
     print("creating bns")
@@ -672,7 +667,7 @@ def run_experiment():
     print("calculating differences")
     e.calculate_differences()
     print("plotting outcomes")
-    plot()
+    plot()'''
 
 
 run_experiment()
