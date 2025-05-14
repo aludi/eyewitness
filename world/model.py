@@ -3,6 +3,8 @@ from world.agent import TreeCell, Ranger, Place
 import random, itertools
 import numpy as np
 import pandas as pd
+import logging
+
 
 
 
@@ -40,7 +42,7 @@ class ForestFire(mesa.Model):
     Simple Forest Fire model.
     """
 
-    def __init__(self, width=50, height=50, density=0.0, num_agents=10):
+    def __init__(self, width=50, height=50, density=0.0, num_agents=10, log=None):
         """
         Create a new forest fire model.
 
@@ -51,6 +53,17 @@ class ForestFire(mesa.Model):
         # Set up model objects
         self.schedule = mesa.time.RandomActivation(self)
         self.grid = mesa.space.MultiGrid(width, height, torus=False)
+        if log is None:
+            logging.basicConfig(
+                filename='experiment.log',  # Log file path
+                level=logging.INFO,  # Log level
+                format='%(asctime)s - %(levelname)s - %(message)s'
+            )
+            log = logging.getLogger(__name__)
+            log.info("Logger is working")
+        self.model_log = log
+
+        self.model_log.info("Logging has started.")
 
         self.place_agents = []
         self.people_agents = []
@@ -165,6 +178,7 @@ class ForestFire(mesa.Model):
         """
         Advance the model by one step.
         """
+        self.model_log.info(f"\t timestep: {self.schedule.time}")
         condition = "off"
         for agent in self.place_agents:
             agent.set_condition(condition)

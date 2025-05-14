@@ -325,7 +325,126 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/data/jointprobs/f.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/data/jointprobs/gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/jointprobs/h.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/jointprobs/hb.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/jointprobs/individual/f0T(0, 0, 0)S0.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/jointprobs/individual/f0T(0, 0, 0)S1.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/jointprobs/individual/f0T(0, 0, 0)S2.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/jointprobs/individual/f0T(0, 0, 0)S3.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/jointprobs/individual/f7T(0, 1, 0)S6.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/jointprobs/individual/f7T(0, 1, 0)S7.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/jointprobs/individual/f7T(0, 1, 1)S0.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/jointprobs/individual/gt1T(0, 0, 1)S6.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/jointprobs/individual/gt1T(0, 0, 1)S7.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/jointprobs/individual/gt1T(0, 1, 0)S0.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/jointprobs/individual/gt1T(1, 1, 0)S0.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/jointprobs/individual/gt1T(1, 1, 0)S1.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/jointprobs/individual/gt6T(0, 1, 0)S6.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/jointprobs/t.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -340,6 +459,13 @@
           </value>
         </entry>
         <entry key="/data/out/datacollector(0, 'TESTIFIES', ((0, 0, 0), 'STEAL', 2)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/datacollector(0, 'TESTIFIES', ((0, 0, 0), 'STEAL', 6)).csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -367,7 +493,49 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/data/out/datacollector(0, 'TESTIFIES', ((1, 1, 1), 'STEAL', 3)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/data/out/datacollector(1, 'TESTIFIES', ((1, 1, 0), 'STEAL', 2)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/datacollector(2, 'TESTIFIES', ((0, 1, 0), 'STEAL', 6)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/datacollector(2, 'TESTIFIES', ((1, 1, 1), 'STEAL', 6)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/datacollector(4, 'TESTIFIES', ((1, 0, 0), 'STEAL', 3)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/datacollector(4, 'TESTIFIES', ((1, 1, 0), 'STEAL', 0)).csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/datacollector(6, 'TESTIFIES', ((0, 0, 1), 'STEAL', 2)).csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -395,6 +563,132 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/data/out/problem/fPROBLEM{'Testimony': 'True', 'vision_observationReliability': 'True', 'objectivityReliability': 'False', 'veracityReliability': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/problem/fPROBLEM{'Testimony': 'True', 'vision_observationReliability': 'True', 'objectivityReliability': 'True', 'veracityReliability': 'False'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/problem/fPROBLEM{'Testimony': 'True', 'vision_observationReliability': 'True', 'objectivityReliability': 'True', 'veracityReliability': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/problem/fPROBLEM{'Testimony': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/problem/fPROBLEM{}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/problem/hPROBLEM{'Testimony': 'False'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/problem/hPROBLEM{'Testimony': 'True', 'vision_observationReliability': 'False', 'objectivityReliability': 'False', 'veracityReliability': 'False'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/problem/hPROBLEM{'Testimony': 'True', 'vision_observationReliability': 'False', 'objectivityReliability': 'True', 'veracityReliability': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/problem/hPROBLEM{'Testimony': 'True', 'vision_observationReliability': 'True', 'objectivityReliability': 'False', 'veracityReliability': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/problem/hPROBLEM{'Testimony': 'True', 'vision_observationReliability': 'True', 'objectivityReliability': 'True', 'veracityReliability': 'False'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/problem/hPROBLEM{'Testimony': 'True', 'vision_observationReliability': 'True', 'objectivityReliability': 'True', 'veracityReliability': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/problem/hPROBLEM{'Testimony': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/problem/hPROBLEM{}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/problem/hbPROBLEM{'Testimony': 'False'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/problem/hbPROBLEM{'Testimony': 'True', 'Reliable': 'False'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/problem/hbPROBLEM{'Testimony': 'True', 'Reliable': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/problem/hbPROBLEM{'Testimony': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/problem/hbPROBLEM{}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/data/out/problem/tPROBLEM{'Testimony': 'False'}.csv">
           <value>
             <Attribute>
@@ -410,6 +704,41 @@
           </value>
         </entry>
         <entry key="/data/out/problem/tPROBLEM{'Testimony': 'True', 'vision_observationReliability': 'False', 'objectivityReliability': 'True', 'veracityReliability': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/problem/tPROBLEM{'Testimony': 'True', 'vision_observationReliability': 'True', 'objectivityReliability': 'False', 'veracityReliability': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/problem/tPROBLEM{'Testimony': 'True', 'vision_observationReliability': 'True', 'objectivityReliability': 'True', 'veracityReliability': 'False'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/problem/tPROBLEM{'Testimony': 'True', 'vision_observationReliability': 'True', 'objectivityReliability': 'True', 'veracityReliability': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/problem/tPROBLEM{'Testimony': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/out/problem/tPROBLEM{}.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -437,6 +766,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/data/results/collective/jointDFs.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/data/results/collective/outcomes.csv">
           <value>
             <Attribute>
@@ -451,7 +787,105 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/data/results/difference/D-F-{'Testimony': 'True', 'vision_observationReliability': 'False', 'objectivityReliability': 'False', 'veracityReliability': 'False'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/difference/D-F-{'Testimony': 'True', 'vision_observationReliability': 'False', 'objectivityReliability': 'True', 'veracityReliability': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/difference/D-F-{'Testimony': 'True', 'vision_observationReliability': 'True', 'objectivityReliability': 'False', 'veracityReliability': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/difference/D-F-{'Testimony': 'True', 'vision_observationReliability': 'True', 'objectivityReliability': 'True', 'veracityReliability': 'False'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/difference/D-F-{'Testimony': 'True', 'vision_observationReliability': 'True', 'objectivityReliability': 'True', 'veracityReliability': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/difference/D-F-{'Testimony': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/difference/D-H-{'Testimony': 'False'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/difference/D-H-{'Testimony': 'True', 'vision_observationReliability': 'False', 'objectivityReliability': 'False', 'veracityReliability': 'False'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/difference/D-H-{'Testimony': 'True', 'vision_observationReliability': 'False', 'objectivityReliability': 'True', 'veracityReliability': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/difference/D-H-{'Testimony': 'True', 'vision_observationReliability': 'True', 'objectivityReliability': 'False', 'veracityReliability': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/difference/D-H-{'Testimony': 'True', 'vision_observationReliability': 'True', 'objectivityReliability': 'True', 'veracityReliability': 'False'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/difference/D-H-{'Testimony': 'True', 'vision_observationReliability': 'True', 'objectivityReliability': 'True', 'veracityReliability': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/difference/D-H-{'Testimony': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/data/results/difference/D-HB-{'Testimony': 'False'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/difference/D-HB-{'Testimony': 'True', 'Reliable': 'False'}.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -479,7 +913,133 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/data/results/difference/D-T-{'Testimony': 'False'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/difference/D-T-{'Testimony': 'True', 'vision_observationReliability': 'False', 'objectivityReliability': 'False', 'veracityReliability': 'False'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/difference/D-T-{'Testimony': 'True', 'vision_observationReliability': 'False', 'objectivityReliability': 'True', 'veracityReliability': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/difference/D-T-{'Testimony': 'True', 'vision_observationReliability': 'True', 'objectivityReliability': 'False', 'veracityReliability': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/difference/D-T-{'Testimony': 'True', 'vision_observationReliability': 'True', 'objectivityReliability': 'True', 'veracityReliability': 'False'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/difference/D-T-{'Testimony': 'True', 'vision_observationReliability': 'True', 'objectivityReliability': 'True', 'veracityReliability': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/difference/D-T-{'Testimony': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/data/results/difference/allresults.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/f/f0T(0, 0, 0)S0.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/f/f0T(0, 0, 0)S1.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/f/f0T(0, 0, 0)S2.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/f/f0T(0, 0, 0)S3.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/f/f0T(0, 0, 0)S4.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/f/f0T(0, 0, 0)S5.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/f/f0T(0, 0, 0)S6.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/f/f0T(0, 0, 0)S7.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/f/f5T(0, 1, 1)S7.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/f/f7T(1, 1, 0)S7.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/f/f7T(1, 1, 1)S0.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -501,6 +1061,13 @@
           </value>
         </entry>
         <entry key="/data/results/f/{'Testimony': 'True', 'vision_observationReliability': 'False', 'objectivityReliability': 'True', 'veracityReliability': 'True'}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/f/{'Testimony': 'True', 'vision_observationReliability': 'True', 'objectivityReliability': 'False', 'veracityReliability': 'True'}.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -535,7 +1102,21 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/data/results/gt/0T(0, 0, 0)S0-gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/data/results/gt/0T(0, 0, 0)S0gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/gt/0T(0, 0, 0)S1-gt.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -549,6 +1130,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/data/results/gt/0T(0, 0, 0)S2-gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/data/results/gt/0T(0, 0, 0)S2gt.csv">
           <value>
             <Attribute>
@@ -556,7 +1144,84 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/data/results/gt/0T(0, 0, 0)S3-gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/gt/0T(0, 0, 0)S3gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/gt/0T(0, 0, 0)S4gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/gt/0T(0, 0, 0)S5-gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/gt/0T(0, 0, 0)S6-gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/data/results/gt/0T(0, 0, 1)S1gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/gt/0T(0, 1, 1)S5-gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/gt/0T(0, 1, 1)S6-gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/gt/0T(0, 1, 1)S7-gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/gt/0T(1, 1, 1)S5-gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/gt/7T(1, 0, 0)S2-gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/gt/7T(1, 0, 0)S2gt.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -571,6 +1236,41 @@
           </value>
         </entry>
         <entry key="/data/results/gt/7T(1, 1, 1)S5gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/gt/7T(1, 1, 1)S6-gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/gt/7T(1, 1, 1)S6gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/gt/7T(1, 1, 1)S7-gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/gt/7T(1, 1, 1)S7gt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/gt/False-gt.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -647,6 +1347,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/data/results/h/h0T(0, 0, 0)S2.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/data/results/h/{'Testimony': 'False'}.csv">
           <value>
             <Attribute>
@@ -689,7 +1396,84 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/data/results/hb/hb0T(0, 0, 0)S0.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/hb/hb0T(0, 0, 0)S1.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/hb/hb0T(0, 0, 0)S2.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/hb/hb0T(0, 0, 0)S3.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/hb/hb0T(0, 0, 0)S4.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/hb/hb0T(0, 0, 0)S5.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/hb/hb5T(0, 0, 1)S4.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/hb/hb5T(0, 0, 1)S5.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/data/results/hb/{}.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/joints/individual/jointDFs0T(0, 0, 0)S0.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/joints/individual/jointDFs0T(0, 0, 0)S1.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/results/joints/jointDFs.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

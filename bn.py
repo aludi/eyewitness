@@ -2,6 +2,7 @@ import pandas as pd
 import pyAgrum as gum
 import pyAgrum.lib.image as gumimage
 import os
+import itertools
 import re
 import csv
 
@@ -79,7 +80,73 @@ def create_BN_from_df(df, struct, hypotheses):
         gum.saveBN(bn, f"bns/collective/{struct.lower()}.net")
         convert_networks_to_hugin(f"bns/collective/{struct.lower()}")
 
-def get_evidence(bn_type):
+    calculate_joint(bn,hypotheses, struct)
+
+
+def calculate_joint(bn, hyp, bn_type):
+    variables = bn.names()
+    ie = gum.LazyPropagation(bn)
+    ie.addJointTarget(set(variables))
+    p = ie.jointPosterior(set(variables))
+    I = gum.Instantiation(p)
+    list_jp = []
+    for i in I.loopIn():
+        d = i.todict(True)
+        d["probability"] = p.get(i)
+        list_jp.append(d)
+        #print(p.get(i))
+        #print(i, p)
+
+    df = pd.DataFrame(list_jp)
+    if hyp != "collective":
+        df.to_csv(f"data/jointprobs/individual/{bn_type.lower()}{hyp}.csv")
+    else:
+        df.to_csv(f"data/jointprobs/{bn_type.lower()}.csv")
+
+
+
+
+
+def get_evidence(bn_fp):
+    #file_path = f"bns/{col}/{bn_type.lower()}.net"
+    # Loop through all files and directories in the folder
+    #ev_list = get_evidence(bn_type)
+    try:
+        bn = gum.loadBN(bn_fp)
+
+    except Exception as e:
+        return []
+
+    #print(bn.names())
+    domains = {}
+    no_inf_nodes =  ["Hypothesis", "testimony_seen", "testimony_objectivity", "testimony_veracity"]
+    if "hb" not in bn_fp:
+        no_inf_nodes.append("Reliable")
+    for name in bn.names():
+        #print(name, bn.variableFromName(name).labels())
+        if name not in no_inf_nodes:
+            domains[name] = list(bn.variableFromName(name).labels())
+            domains[name].append("unspecified")
+
+    cols = list(domains.keys())
+
+    # Generate all combinations using each column's specific domain
+    combinations = itertools.product(*(domains[col] for col in cols))
+
+    # Build the list of dictionaries, skipping any 'unspecified' values
+    combinations_dict = []
+    #print(combinations)
+    for combo in combinations:
+        d = {cols[i]: combo[i] for i in range(len(cols)) if combo[i] != 'unspecified'}
+        combinations_dict.append(d)
+
+    #for d in combinations_dict:
+        #print(d)
+    #exit()
+    return combinations_dict
+
+
+    '''
     if bn_type == "HB":
         e_all_true = {"Testimony": "True", "Reliable": "True"}
         e_unreliable1 = {"Testimony": "True", "Reliable": "False"}
@@ -100,14 +167,16 @@ def get_evidence(bn_type):
                          "objectivityReliability": "True", "veracityReliability": "False"}
 
     return [{}, {"Testimony": "True"}, {"Testimony": "False"}, e_all_true, e_unreliable1,
-                     e_unreliable2, e_unreliable3, e_unreliable4]
+                     e_unreliable2, e_unreliable3, e_unreliable4]'''
+
+
 
 def bn_inference_collective(bn_types):
     outcomes = [["Evidence", "BN", "PTrue", "PFalse"]]
     for bn_type in bn_types:
         file_path = f"bns/collective/{bn_type.lower()}.net"
         # Loop through all files and directories in the folder
-        ev_list = get_evidence(bn_type)
+        ev_list = get_evidence(file_path)
 
         for evidence in ev_list:
 
@@ -127,7 +196,7 @@ def bn_inference_collective(bn_types):
                 print(e)
                 print(f"{file_path} {evidence} missing data, cannot calculate posterior")
                 inf_problem.append([file_path])     # things that are not observed in the dataset have a probability of 0
-                outcomes.append([file_path, 0, 1])
+                outcomes.append([file_path, -1, -1])
     print(outcomes)
 
     with open("data/results/collective/outcomes.csv", 'w') as f:
@@ -135,63 +204,40 @@ def bn_inference_collective(bn_types):
         wr.writerows(outcomes)
 
 
-def bn_inference(bn_types, hypothesis):
+def bn_inference(bn_types):
     for bn_type in bn_types:
         folder_path = f"bns/{bn_type.lower()}"
         # Loop through all files and directories in the folder
-        ev_list = get_evidence(bn_type)
-        for evidence in ev_list:
-            #print(evidence)
-            outcomes = [["Hypothesis", "PTrue", "PFalse", "total"]]
-            inf_problem = [["Hypothesis"]]
-            filename = f"{bn_type.lower()}{hypothesis}"
-            file_path = os.path.join(folder_path, filename)
-            try:
-                bn = gum.loadBN(file_path)
-                ie = gum.LazyPropagation(bn)
+        for filename in os.listdir(folder_path):
+            if "hugin" not in filename:
+                outcomes = [["Evidence", "PTrue", "PFalse"]]
+                file_path = os.path.join(folder_path, filename)
+                ev_list = get_evidence(file_path)
 
-                ie.setEvidence(evidence)
+                for evidence in ev_list:
 
-                pt = ie.posterior("Hypothesis")[{"Hypothesis": "True"}]
-                pf = ie.posterior("Hypothesis")[{"Hypothesis": "False"}]
-                outcomes.append([file_path, pt, pf])
+                    #print(evidence)
+                    #inf_problem = [["Hypothesis"]]
+                    #filename = f"{bn_type.lower()}{hypothesis}"
+                    try:
+                        bn = gum.loadBN(file_path)
+                        ie = gum.LazyPropagation(bn)
 
-            except Exception as e:
-                print(e)
-                print(f"{filename} {evidence} missing data, cannot calculate posterior")
-                inf_problem.append([file_path])  # things that are not observed in the dataset have a probability of 0
-                outcomes.append([file_path, 0, 1])
+                        ie.setEvidence(evidence)
 
-            ev = evidence
+                        pt = ie.posterior("Hypothesis")[{"Hypothesis": "True"}]
+                        pf = ie.posterior("Hypothesis")[{"Hypothesis": "False"}]
+                        outcomes.append([evidence, pt, pf])
 
-            with open(f"data/results/{bn_type.lower()}/{ev}.csv", 'w') as f:
-                writer = csv.writer(f)
-                writer.writerows(outcomes)
+                    except Exception as e:
+                        print(e)
+                        print(f"{filename} {evidence} missing data, cannot calculate posterior")
+                        #inf_problem.append([file_path])  # things that are not observed in the dataset have a probability of 0
+                        outcomes.append([evidence, -1, -1])
 
-            with open(f"data/out/problem/{bn_type.lower()}PROBLEM{ev}.csv", 'w') as f:
-                writer = csv.writer(f)
-                writer.writerows(inf_problem)
-
-            df = pd.read_csv(f"data/results/{bn_type.lower()}/{ev}.csv")
-            # Apply the extraction
-            '''
-            df["sort_key"] = df["Hypothesis"].apply(extract_sort_key)
-
-            # Sort by the composite key
-            df= df.sort_values("sort_key").drop(columns="sort_key")
-            print(df["Hypothesis"])
-            #print(df["sort_key"])
-            df.to_csv(f"data/results/{bn_type.lower()}/{ev}.csv")'''
-
-def extract_sort_key(hypo):
-    match = re.search(r"\((\d+), 'TESTIFIES', \(\((\d), (\d), (\d)\), 'STEAL', (\d+)\)\)", hypo)
-    if match:
-        a, b1, b2, b3, c = map(int, match.groups())
-        return (a, b1, b2, b3, c)
-    else:
-        return (999, 999, 999, 999, 999)  # fallback for malformed strings
-
-
+                with open(f"data/results/{bn_type.lower()}/{filename.split(".net")[0]}.csv", 'w') as f:
+                    writer = csv.writer(f)
+                    writer.writerows(outcomes)
 
 
 

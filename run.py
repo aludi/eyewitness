@@ -1,3 +1,5 @@
+from fontTools.misc.bezierTools import epsilon
+
 from world.server import server
 from world.model import ForestFire
 import pandas as pd
@@ -7,8 +9,11 @@ import numpy as np
 import csv
 import re
 import os
+import json
 from bn import make_bn, bn_inference, bn_inference_collective
 from plotting import plot
+import math
+import logging
 
 class Experiment():
 
@@ -27,9 +32,20 @@ class Experiment():
     '''
 
     def collect_data(self, runs):
+        open('experiment.log', 'w').close()# DELEte old funs
+        logging.basicConfig(
+            filename='experiment.log',  # Log file path
+            level=logging.INFO,  # Log level
+            format='%(asctime)s - %(levelname)s - %(message)s'
+        )
+        self.log = logging.getLogger(__name__)
+        self.log.info("Logger is working")
+
         df_list = []
         for i in range(0, runs):
             print("runs", i)
+            self.log.info(f"Run number : {i}")
+
             model = self.run_model()
             self.final_model = model
             df = self.create_dataframe(model)
@@ -42,7 +58,7 @@ class Experiment():
 
     def run_model(self):
         #print(self.num_agents)
-        model = ForestFire(30, 30, 0.00001, num_agents=self.num_agents)
+        model = ForestFire(30, 30, 0.00001, num_agents=self.num_agents, log=self.log)
         for i in range(0, self.simulation_time+1):
             model.step()
         return model
@@ -95,7 +111,7 @@ class Experiment():
             subset = df[df["Testimony"] == hyp]  # length should be num of runs.
             self.posterior_frequencies(subset, hyp)
             self.prepare_bn_data(subset, hyp)
-
+            self.calculate_joint(subset)
 
     def calculate_joint(self, df):
         s = []
@@ -103,10 +119,21 @@ class Experiment():
                 "vreliability_objective", "vveracity", "vreliability_veracity"]
         for col_name in cols:
             s.append(df[col_name])
+
         joint_counts = df.groupby(cols).size()
         joint_probabilities = joint_counts / joint_counts.sum()
         joint_probabilities_df = joint_probabilities.reset_index(name='probability')
-        joint_probabilities_df.to_csv("data/jointprobs/gt.csv")
+        if df["Testimony"].nunique() !=1:
+            joint_probabilities_df.to_csv("data/jointprobs/gt.csv")
+        else:
+            t = df["Testimony"].unique()[0]
+            joint_probabilities_df.to_csv(f"data/jointprobs/individual/gt{t}.csv")
+
+        # for individual hypotheses.
+
+
+
+
 
     def posterior_frequencies(self, df, collective):
         if collective == "collective":
@@ -137,6 +164,27 @@ class Experiment():
         with open(f"data/results/{collective}/{hyp}-gt.csv", 'w') as f:
             writer = csv.writer(f)
             writer.writerows(posteriors_list)
+
+        # convert evidence names post-hoc
+        df = pd.read_csv(f"data/results/{collective}/{hyp}-gt.csv")
+
+        df["Evidence"] = df["Evidence"].apply(lambda x: self.rename_keys(ast.literal_eval(x)) if isinstance(x, str) else x)
+        print(df["Evidence"])
+        df.to_csv(f"data/results/{collective}/{hyp}-gt.csv")
+
+
+    def rename_keys(self, d):
+        key_map = {
+            'vTestimony': "Testimony",
+            "vreliability_vision": "vision_observationReliability",
+            "vreliability_objective": "objectivityReliability",
+            "vreliability_veracity": "veracityReliability"
+        }
+
+        if isinstance(d, dict):
+            return {key_map.get(k, k): v for k, v in d.items()}
+        return d
+
 
 
     def prepare_bn_data(self, df, collective):
@@ -450,32 +498,142 @@ class Experiment():
             make_bn(df, bn, variables)
 
     def bns_inference(self):
-        hypotheses = self.enumerate_hypotheses()
-        for hypothesis in hypotheses:
-            bn_inference(self.bn_types, hypothesis)
-        bn_inference_collective(self.bn_types)
+        bn_inference(self.bn_types)
+        #bn_inference_collective(self.bn_types)
+
+    def compare_joints(self):
+        self.compare_joint("", "")
+        for h in self.enumerate_hypotheses():
+            self.compare_joint(f"individual/", h)
+
+
+
+    def compare_joint(self,var1, var2):
+        # individual and collective
+        # get individual gt... subset on relevant hypothesis
+
+        gt_joint = pd.read_csv(f"data/jointprobs/{var1}gt{var2}.csv")
+        list_df = []
+        # rename the columns of the GT dataframe
+        rename_heads = {"vHyp":"Hypothesis",
+         "vTestimony":"Testimony",
+         "vseen_stealing":"testimony_seen",
+         "vreliability_vision":"vision_observationReliability",
+        "vobjective_interpretation":"testimony_objectivity",
+         "vreliability_objective":"objectivityReliability",
+         "vveracity":"testimony_veracity",
+         "vreliability_veracity":"veracityReliability"}
+        gt_joint = gt_joint.rename(columns=rename_heads)
+        gt_joint["Reliable"] = (gt_joint["veracityReliability"] & gt_joint["objectivityReliability"] & gt_joint["vision_observationReliability"])
+
+        gt_joint = gt_joint.loc[:, ~gt_joint.columns.str.contains("^Unnamed")]
+
+        print(gt_joint.info())
+
+        for bn in self.bn_types:
+            bn_joint = pd.read_csv(f"data/jointprobs/{var1}{bn.lower()}{var2}.csv")
+            bn_joint = bn_joint.loc[:, ~bn_joint.columns.str.contains("^Unnamed")]
+
+            rel_cols_bn = bn_joint.columns
+            cols_gt = gt_joint.columns
+            cols_to_sum_out = list(set(cols_gt) - set(rel_cols_bn))
+
+            # Get all other variable columns except the one to sum out and the probability column
+            group_cols = [col for col in gt_joint.columns if col not in cols_to_sum_out +["probability"]]
+
+            # Group by remaining variables and sum probabilities
+            df_marginalized = gt_joint.groupby(group_cols, as_index=False)["probability"].sum()
+
+            print(bn_joint.info())
+
+
+
+
+            cols = list(bn_joint.columns)
+            cols.remove("probability")
+
+            for key in cols:
+                assert key in bn_joint.columns, f"{key} not in df1"
+                assert key in df_marginalized.columns, f"{key} not in df2"
+
+            collapse_cols = cols
+
+            # Create a new column with the label-value pairs
+            bn_joint["Evidence"] = bn_joint[collapse_cols].apply(
+                lambda row: ", ".join(f"{col}{val}" for col, val in row.items()), axis=1
+            )
+
+            df_marginalized["Evidence"] = df_marginalized[collapse_cols].apply(
+                lambda row: ", ".join(f"{col}{val}" for col, val in row.items()), axis=1
+            )
+
+            bn_joint = bn_joint[["Evidence", "probability"]]
+            df_marginalized = df_marginalized[["Evidence", "probability"]]
+
+            merged = pd.merge(bn_joint, df_marginalized, on="Evidence", how="outer")
+            rename_heads = {"probability_x":"probability", "probability_y":"GTF"}
+
+            merged = merged.rename(columns=rename_heads)
+            # Fill missing values with 0
+            merged_filled = merged.fillna(0)
+            #print(merged_filled)
+            merged_filled["BN"] = bn
+
+            # calcualte KL divergence over the joint
+
+            epsilon = 1e-10
+
+            print(var2)
+
+            merged_filled["KL-val"] = merged_filled.apply(
+                lambda row: row["GTF"] * math.log2((row["GTF"] + epsilon) / (row["probability"] + epsilon))
+                if row["probability"] > 0 else 0, axis=1
+            )
+            print(f"KL-divergence {bn} : ", merged_filled["KL-val"].sum())
+
+            merged_filled["difference"] = merged_filled.apply(
+                lambda row: (row["probability"]-row["GTF"])**2, axis=1
+            )
+            print(f"difference {bn} : ", merged_filled["difference"].sum()/merged_filled.shape[0])
+
+            merged_filled["Hypothesis"] = var2
+            list_df.append(merged_filled)
+
+
+
+            # it seems like the only conclusion we can draw from this
+            # is that the distributions are different from the ground truth, and
+            # we cannot say how bad that is...
+
+        df = pd.concat(list_df)
+        df.to_csv(f"data/results/joints/{var1}jointDFs{var2}.csv")
 
 
     def calculate_differences(self):
-        #self.calculate_differences_individual()
+        self.calculate_differences_individual()
         self.calculate_differences_collective()
         pass
 
     def calculate_differences_collective(self):
-        gt_df = f"data/results/collective/gt.csv"
+        gt_df = f"data/results/collective/-gt.csv"
         bn_df = f"data/results/collective/outcomes.csv"
         gt_df = pd.read_csv(gt_df)
         bn_df = pd.read_csv(bn_df)
-        gt_df["Evidence"] = gt_df["ev"]
-        gt_df["FTrue"] = gt_df["FStealT"]
-        gt_df["FFalse"] = gt_df["FStealF"]
+        gt_df["Evidence"] = gt_df["Evidence"]
+        gt_df["FTrue"] = gt_df["FTrue"]
+        gt_df["FFalse"] = gt_df["FFalse"]
         g_df = gt_df[["Evidence", "FTrue", "FFalse"]]
+
+        g_df.loc[:,"Evidence"] = g_df["Evidence"].apply(self.normalize_dict_string)
+        bn_df.loc[:,"Evidence"] = bn_df["Evidence"].apply(self.normalize_dict_string)
+
+        #print(g_df)
+        #exit()
         pd.set_option('display.max_columns', None)
         merged = pd.merge(bn_df, g_df, on='Evidence')
         merged["DT"] = abs(merged["FTrue"] -merged["PTrue"])
         merged["DF"] = abs(merged["FFalse"] -merged["PFalse"])
         merged.to_csv(f"data/results/collective/difference.csv")
-
 
 
     def get_ground_truth_collective(self):
@@ -505,85 +663,52 @@ class Experiment():
         print(df)
         df.to_csv(f"data/results/collective/gt.csv")
 
+    def normalize_dict_string(self, s):
+        d = ast.literal_eval(s)  # safely convert string to dict
+        #print(json.dumps(d, sort_keys=True))
+        for k in d.keys():
+            d[k] = str(d[k])
+        return json.dumps(d, sort_keys=True)  # convert dict to JSON string with sorted keys
 
 
     def calculate_differences_individual(self):
         df_col = []
         for bn_type in self.bn_types:
-            #folder_path = f"bns/{bn_type.lower()}"
+            folder_path = f"data/results/{bn_type.lower()}"
             # Loop through all files and directories in the folder
-            if bn_type == "HB":
-                e_all_true = {"Testimony": "True", "Reliable": "True"}
-                e_unreliable1 = {"Testimony": "True", "Reliable": "False"}
-                e_unreliable2 = {"Testimony": "True", "Reliable": "False"}
-                e_unreliable3 = {"Testimony": "True", "Reliable": "False"}
-                e_unreliable4 = {"Testimony": "True", "Reliable": "False"}
+            for filename in os.listdir(folder_path):
+                hypothesis = filename.removeprefix(bn_type.lower())
+                gt_s = f"{hypothesis.split(".csv")[0]}-gt.csv"
+                file_path = os.path.join(folder_path, filename)
+                df_GT = pd.read_csv(f"data/results/gt/{gt_s}")
 
-            else:
-                e_all_true = {"Testimony": "True", "vision_observationReliability": "True",
-                              "objectivityReliability": "True", "veracityReliability": "True"}
-                e_unreliable1 = {"Testimony": "True", "vision_observationReliability": "False",
-                                 "objectivityReliability": "False", "veracityReliability": "False"}
-                e_unreliable2 = {"Testimony": "True", "vision_observationReliability": "False",
-                                 "objectivityReliability": "True", "veracityReliability": "True"}
-                e_unreliable3 = {"Testimony": "True", "vision_observationReliability": "True",
-                                 "objectivityReliability": "False", "veracityReliability": "True"}
-                e_unreliable4 = {"Testimony": "True", "vision_observationReliability": "True",
-                                 "objectivityReliability": "True", "veracityReliability": "False"}
-            for evidence in [{}, {"Testimony": "True"}, {"Testimony": "False"}, e_all_true, e_unreliable1,
-                             e_unreliable2, e_unreliable3, e_unreliable4]:
-                #print(evidence)
-                folder_path = f"data/results/{bn_type.lower()}/{evidence}.csv"
-                #print(folder_path)
-
-                df_BN = pd.read_csv(folder_path)
-                if bn_type == "HB":
-                    if evidence == e_all_true:
-                        e = {"Testimony": "True", "vision_observationReliability": "True",
-                                      "objectivityReliability": "True", "veracityReliability": "True"}
-                    else:
-                        e = {"Testimony": "True", "vision_observationReliability": "True",
-                             "objectivityReliability": "True", "veracityReliability": "False"}
-                    df_GT = pd.read_csv(f"data/results/gt/{e}.csv")
-                else:
-                    df_GT = pd.read_csv(f"data/results/gt/{evidence}.csv")
-
-                df_BN['hyp'] = df_BN['Hypothesis'].str.findall(r'(\d+)')
-                df_GT['hyp'] = df_GT['Hypothesis'].str.findall(r'(\d+)')
-
+                try:
+                    df_BN = pd.read_csv(file_path)
+                except Exception as e:
+                    df_BN = df_GT.copy()
+                    df_BN["PTrue"] = 0
+                    df_BN["PFalse"] = 0
 
                 df_GT[f"PTrueGT"] = df_BN["PTrue"]
                 df_GT[f"PFalseGT"] = df_BN["PFalse"]
+                d_GT = df_GT[["Evidence", "PTrueGT", "PFalseGT"]]
 
-                BN_d = df_BN[["hyp", f"PTrue", f"PFalse"]]
-                BN_d = BN_d[BN_d['hyp'].apply(lambda x: x != [])]
-                BN_d["hyp"] = BN_d["hyp"].apply(lambda x: str(x))
+                #print(d_GT["Evidence"])
+                d_GT.loc[:,"Evidence"] = d_GT["Evidence"].apply(self.normalize_dict_string)
+                df_BN.loc[:,"Evidence"] = df_BN["Evidence"].apply(self.normalize_dict_string)
 
-
-                GT_d = df_GT[["hyp", f"PTrueGT", f"PFalseGT"]]
-                GT_d["hyp"] = GT_d["hyp"].apply(lambda x: str(x))
-
-                results = pd.merge(BN_d, GT_d,on="hyp")
-
-                results["DPTrue"] = abs(results["PTrueGT"] - results[f"PTrue"])
-                results["DPFalse"] = abs(results["PFalseGT"] - results[f"PFalse"])
-                results["evidence"] = str(evidence)
-                results["bn"] = bn_type
-
-                print(results["evidence"])
-
+                if not set(df_BN["Evidence"]).issubset(set(d_GT["Evidence"])):
+                    print("confuse")
+                    print(set(df_BN["Evidence"]) - set(d_GT["Evidence"]))
+                    print(bn_type, hypothesis)
+                results = pd.merge(d_GT, df_BN,on="Evidence")
+                results["Hypothesis"] = hypothesis
+                results["BN"] = bn_type
+                results["DPTrue"] = abs(results["PTrueGT"]-results["PTrue"])
+                results["DPTFalse"] = abs(results["PFalseGT"]-results["PFalse"])
                 df_col.append(results)
-
-                #print(bn_type, evidence)
-                #print(results)
-                results.to_csv(f"data/results/difference/D-{bn_type}-{evidence}.csv")
-
-                #print(df_BN)
-                #print(df_GT)
-                # merge on column hyp. rename the other columns
-            all_results = pd.concat(df_col)
-            all_results.to_csv("data/results/difference/allresults.csv")
-
+        all_results = pd.concat(df_col)
+        all_results.to_csv("data/results/difference/allresults.csv")
 
 
 def run_visual():
@@ -594,17 +719,19 @@ def run_experiment():
 
     e = Experiment()
     print("running simulation")
-    e.collect_data(e.num_runs)
+    #e.collect_data(e.num_runs)
     print("preprocessing data")
-    e.get_ground_truth()
+    #e.get_ground_truth()
     print("creating bns")
-    e.make_bns()
+    #e.make_bns()
+    print("compare the joint probs of the BNs with the GT")
+    #e.compare_joints()
     print("calculating posteriors")
-    e.bns_inference()
+    #e.bns_inference()
     print("calculating differences")
-    '''e.calculate_differences()
+    #e.calculate_differences()
     print("plotting outcomes")
-    plot()'''
+    plot()
 
 
 run_experiment()
